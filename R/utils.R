@@ -51,8 +51,12 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
     if(operation=="mean")  df <- meaning_r(df,group_by_viz,variable_viz)
   }
 
-  if(type_viz=="line"){
-    if(operation=="mean")  df <- meaning_r(df,group_by_viz,variable_viz,desagregation_viz)
+  if(type_viz=="line"){ #add format graph hchmagic CatYeaNUm
+    if(operation=="mean") {
+
+      if(is.null(desagregation_viz)) df <- meaning_r(df,group_by_viz,variable_viz)
+      else df <- meaning_r(df,desagregation_viz,variable_viz,group_by_viz)
+    }
   }
 
   if(type_viz=="bar"){
@@ -65,3 +69,17 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
 
   df
 }
+
+#' @import dplyr
+#' @export
+selecting_viz_typeGraph <- function(df,type_viz) {
+  # Vizualizaciones requeridas:Clorepethc  Line  Bar   treemap   table, se pueden dejar en un solo if las que no necesitan desagregacion
+  prex <- "YeaNum"
+  if(type_viz=="map") {  prex <- "CatNum" }
+  if(type_viz=="line") {
+    if(ncol(df) > 2)  prex <- "CatYeaNum"
+  }
+  prex
+}
+
+

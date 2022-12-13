@@ -3,4 +3,5 @@
 export(filtering_list)
 export(meaning_r)
 export(selecting_viz_data)
+export(selecting_viz_typeGraph)
 import(dplyr)

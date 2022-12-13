@@ -1,4 +1,4 @@
-Package: pharma-countries
+Package: pharma.countries
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
@@ -11,7 +11,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    dplyr
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0)
