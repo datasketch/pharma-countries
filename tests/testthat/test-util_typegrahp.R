@@ -1,11 +1,11 @@
 load("data/sample_data.rda")
 
 
-# test_that("ifelse typeviz map  works", {
-#   df=selecting_viz_data(data,type_viz = "map",group_by_viz = "country", variable_viz = "tender_value_amount")
-#
-#   expect_equal(selecting_viz_typeGraph(df,"map"), meaning_r(data,"country","tender_value_amount"))
-# })
+test_that("ifelse typeviz map  works", {
+  df=selecting_viz_data(data,type_viz = "map",group_by_viz = "country", variable_viz = "tender_value_amount")
+
+  expect_equal(selecting_viz_typeGraph(df,"map"), "GnmNum")
+})
 
 test_that("ifelse typeviz line 1 works", {
   df3 <- selecting_viz_data(data,type_viz = "line",group_by_viz = "tender_year", variable_viz = "tender_value_amount")

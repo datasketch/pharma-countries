@@ -75,7 +75,7 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
 selecting_viz_typeGraph <- function(df,type_viz) {
   # Vizualizaciones requeridas:Clorepethc  Line  Bar   treemap   table, se pueden dejar en un solo if las que no necesitan desagregacion
   prex <- "YeaNum"
-  if(type_viz=="map") {  prex <- "CatNum" }
+  if(type_viz=="map") {  prex <- "GnmNum" }
   if(type_viz=="line") {
     if(ncol(df) > 2)  prex <- "CatYeaNum"
   }
@@ -83,3 +83,11 @@ selecting_viz_typeGraph <- function(df,type_viz) {
 }
 
 
+
+#' @import dplyr
+#' @export
+creating_detail_data <- function(df,click, variable_filter) {
+
+
+
+}
