@@ -1,0 +1,10 @@
+
+load("data/sample_data.rda")
+#gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL)
+#version sin modal implementado
+# print(gen_html_detail(sample_data %>% head(2)))
+
+test_that("Demo side panel html", {
+  a=" <B>կալիումի քլորիդ a12ba01, b05xa01</B> </BR> <B>Country</B>: AM </BR> <B>Tender amount</B>: 394943.19 </BR> <B>Unit Price</B>: 197.6 </BR> <B>ATC code</B>: A12BA01 </BR> <B>ATC product_name</B>: potassium chloride </BR> <button id='կալիումի քլորիդ a12ba01, b05xa01'>i</button> <div id='կալիումի քլորիդ a12ba01, b05xa01_կալիումի քլորիդ a12ba01, b05xa01' class='modal' <div class='modal-content'> <span class='close'>&times;</span> <p> <B>կալիումի քլորիդ a12ba01, b05xa01</B> </BR> <B>Country</B>: AM </BR> <B>Tender amount</B>: 394943.19 </BR> <B>Unit Price</B>: 197.6 </BR> <B>ATC code</B>: A12BA01 </BR> <B>ATC product_name</B>: potassium chloride </BR> </p> </div> </div> </BR> </BR> <B>գլյուկոզ b05cx01, v04ca02, v06dc01</B> </BR> <B>Country</B>: AM </BR> <B>Tender amount</B>: 4285503 </BR> <B>Unit Price</B>: 35 </BR> <B>ATC code</B>: B05CX01 </BR> <B>ATC product_name</B>: glucose </BR> <button id='գլյուկոզ b05cx01, v04ca02, v06dc01'>i</button> <div id='գլյուկոզ b05cx01, v04ca02, v06dc01_գլյուկոզ b05cx01, v04ca02, v06dc01' class='modal' <div class='modal-content'> <span class='close'>&times;</span> <p> <B>գլյուկոզ b05cx01, v04ca02, v06dc01</B> </BR> <B>Country</B>: AM </BR> <B>Tender amount</B>: 4285503 </BR> <B>Unit Price</B>: 35 </BR> <B>ATC code</B>: B05CX01 </BR> <B>ATC product_name</B>: glucose </BR> </p> </div> </div> </BR> </BR>"
+  expect_equal(gen_html_detail(sample_data %>% head(2)) ,shiny::HTML(a))
+})
