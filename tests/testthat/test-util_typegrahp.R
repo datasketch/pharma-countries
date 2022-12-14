@@ -31,13 +31,13 @@ test_that("ifelse typeviz line 2cworks", {
 test_that("ifelse typeviz bar works", {
   df3 <- selecting_viz_data(data,type_viz = "bar",group_by_viz = "ATC.product_name", variable_viz = "tender_value_amount")
   # hgchmagic::hgch_bar_YeaNum(df3)
-  expect_equal(selecting_viz_typeGraph(df3,"bar"), "YeaNum")
+  expect_equal(selecting_viz_typeGraph(df3,"bar"), "CatNum")
 })
 
 
 test_that("ifelse typeviz bar works", {
   df3 <- selecting_viz_data(data,type_viz = "treemap",group_by_viz = "country", variable_viz = "tender_value_amount")
   # hgchmagic::hgch_treemap_CatNum(df3)
-  expect_equal(selecting_viz_typeGraph(df3,"treemap"), "YeaNum")
+  expect_equal(selecting_viz_typeGraph(df3,"treemap"), "CatNum")
 
 })

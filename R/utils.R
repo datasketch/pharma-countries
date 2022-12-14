@@ -2,7 +2,7 @@
 
 #' @import dplyr
 #' @export
-filtering_list <- function(df,list_params=NULL){
+filtering_list <- function(df, list_params = NULL){
   #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
 
   # list_params=list(id_country = NULL, id_anio=2010)
@@ -12,7 +12,7 @@ filtering_list <- function(df,list_params=NULL){
   for(i in 1:length(list_params)) {
 
     df$temp <-  df[[names(list_params[i])]]
-    if(!is.null(list_params[[i]]))  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+    if(!is.null(list_params[[ i ]]))  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
 
   }
   df
@@ -70,6 +70,7 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
   df
 }
 
+
 #' @import dplyr
 #' @export
 selecting_viz_typeGraph <- function(df, type_viz) {
@@ -79,8 +80,10 @@ selecting_viz_typeGraph <- function(df, type_viz) {
   if(type_viz=="line") {
     if(ncol(df) > 2)  prex <- "CatYeaNum"
   }
+  if(type_viz=="bar" | type_viz=="treemap" ) prex <- "CatNum"
   prex
 }
+
 
 #' @import dplyr
 #' @import shiny
@@ -111,10 +114,13 @@ gen_html_detail_to_modal <- function(id,list_block) {
 }
 
 
- var_test = "<p>Some text in the Modal..</p>"
- id="Uk paper"
+#  var_test = "<p>Some text in the Modal..</p>"
+#  id="Uk paper"
+# #
+# print(gen_html_detail_to_modal(id,var_test) )
 #
-print(gen_html_detail_to_modal(id,var_test) )
+
+
 
 #' @import dplyr
 #' @import shiny
