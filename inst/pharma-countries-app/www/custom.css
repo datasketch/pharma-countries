@@ -1,0 +1,213 @@
+
+/* STYLES HEAD */
+.top-chardonnay {
+  border-top: 1.5px solid #3695d8;
+}
+.text-chardonnay,.text-malibu {
+  letter-spacing: 0.8px;
+  color: #3695D8;
+  text-transform: capitalize
+}
+
+.panel-header {
+  padding: 1rem 1.5rem 0rem 2rem;
+  align-items: self-start;
+}
+
+.panel-body {
+  margin-left: 6px;
+}
+
+/* STYLES TO VIZ ICONS */
+.head-viz {
+ display: flex;
+ gap: 10px;
+}
+
+.buttons-group {
+  background-color: transparent;
+  display: flex !important;
+  gap: 5px !important;
+  padding: 0;
+}
+
+.buttons-group .button-container {
+  height: 35px;
+}
+
+.button-container {
+  box-shadow: 0px 3px 6px #0000001A !important;
+  border-radius: 10px !important;
+  border: 0px !important;
+  padding: 1px !important;
+}
+
+.buttons-group .button-style {
+  width: 30px;
+}
+
+.buttons-group .button-style.active-btn {
+  filter: grayscale(1) !important;
+  background-color: #C84210 !important;
+  background: #C84210 !important;
+  color: #C84210 !important;
+}
+
+
+.buttons-group .button-style.active-btn:hover {
+  background-color: #C84210 !important;
+  background: #C84210 !important;
+  color: #C84210 !important;
+}
+
+.button-checkmark {
+  display: none;
+}
+
+/* STYLES TO DOWNLOAD BUTTON */
+.dropdown-action-trigger {
+  background: #E73247 0% 0% no-repeat padding-box;
+  border-radius: 18px;
+  opacity: 1;
+}
+
+.dropdown-action-trigger:hover {
+  background-color: #E73247;
+}
+
+
+/* STYLES TO SEARCH WIDGET */
+.input-autosuggest {
+  padding: 4px 4px;
+  background-color: #ffffff;
+  border: 1px solid #D8D8D8 !important;
+  border-radius: 6px !important;
+  opacity: 1;
+  margin-top: -13px !important;
+  margin-bottom: 13px !important;
+}
+
+/* STYLES TO SELECTIZE INPUTS */
+.selectize-input {
+  border: 1px solid #D8D8D8 !important;
+  border-radius: 6px !important;
+  opacity: 1;
+}
+.control-label {
+  color: #000;
+}
+
+/* STYLES TO DATES INPUTS */
+.shinyinvoer-date-range-container {
+  margin-top: -5px !important;
+}
+
+.shinyinvoer-date-range-select p {
+  margin-bottom: 3px;
+  color: #000;
+  font-weight: 500;
+}
+
+.shinyinvoer-date-range-start{
+ border: 1px solid #D8D8D8 !important;
+ border-radius: 6px !important;
+}
+
+.shinyinvoer-date-range-end{
+ border: 1px solid #D8D8D8 !important;
+ border-radius: 6px !important;
+}
+
+.shinyinvoer-date-range-input label {
+  color: #00000;
+  font-weight: 500;
+  margin-bottom: 19px;
+}
+
+.flatpickr-input[readonly] {
+    cursor: pointer;
+    color: #000;
+    font-size: 12px;
+    margin-bottom: 15px;
+    padding: 7px;
+    width: 100%;
+}
+
+/* STYLES TO switch INPUT
+.switch-state:checked + .switch-display {
+  background-color: #E73247;
+  color: #ffffff;
+}
+
+.switch-state:checked + .switch-display .switch-indicator {
+  border-color: #E73247;
+  transform: translateX(100%);
+}
+*/
+
+.shiny-options-group {
+  display: flex !important;
+  gap: 20px !important;
+}
+
+.form-group {
+  margin-bottom: 0px !important;
+}
+
+
+/* STYLES LOGOS*/
+.panel-footer {
+  padding: 1rem 1rem !important;
+  border-top: 1px solid #D8D8D8;
+  margin: 0px 9px;
+}
+
+.footer-logos {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.click {
+  text-align: center;
+}
+
+.click-img {
+  margin-top: 20%;
+  margin-bottom: 5%;
+}
+
+/* STYLES CLICK INFO */
+
+.click-title {
+  text-align: left;
+  letter-spacing: 0.42px;
+  color: #000000;
+  font-weight: 500;
+  margin-bottom: 7px;
+}
+
+.click-p {
+  display: flex;
+  gap: 5px;
+  margin-bottom: -10px;
+}
+
+.click-tl {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.36px;
+  color: #3695D8;
+  opacity: 1;
+}
+
+.click-subtitle {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.36px;
+  color: #000000;
+  opacity: 1;
+}
+
+

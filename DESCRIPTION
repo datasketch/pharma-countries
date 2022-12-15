@@ -13,6 +13,8 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10),
     dplyr
+Imports:
+    shiny
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0)
