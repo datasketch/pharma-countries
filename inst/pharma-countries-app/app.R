@@ -122,6 +122,8 @@ server <- function(input, output, session) {
     # req(parmesan_input())
     ls= parmesan_input()
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
+    #TODO hacer en preprocces
+    df$unit_price <- as.numeric(df$unit_price)
     df <- filtering_list(df,ls,"tender_year")
     df
   })
@@ -139,8 +141,14 @@ server <- function(input, output, session) {
       df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "ATC.product_name")
     }
     if(actual_but$active == "line") {
+      print("vizdown")
+      print(actual_but$active)
+      print(ls$InsId_rb)
+      print(colnames(data_down()))
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
+    print(df)
+    print("out")
     df
   })
 
@@ -168,6 +176,7 @@ server <- function(input, output, session) {
     viz=""
     #print("viz")
     if(actual_but$active == "bar" | actual_but$active == "line" | actual_but$active == "treemap") {
+
         viz <- paste0("hgchmagic::", paste0("hgch_",actual_but$active, "_", vizFrtype()))
         library(hgchmagic)
     }
