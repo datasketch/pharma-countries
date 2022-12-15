@@ -258,24 +258,24 @@ server <- function(input, output, session) {
     if (!actual_but$active %in% c("map")) return()
     viz_down()
   })
-  #
-  # output$dt_viz <- DT::renderDataTable({
-  #   req(actual_but$active)
-  #   if (actual_but$active != "table") return()
-  #   req(data_down())
-  #   df <- data_down()
-  #   dtable <- DT::datatable(df,
-  #                           rownames = F,
-  #                           selection = 'none',
-  #                           options = list(
-  #                             scrollX = T,
-  #                             fixedColumns = TRUE,
-  #                             fixedHeader = TRUE,
-  #                             scrollY = "500px"
-  #                           ))
-  #
-  #   dtable
-  # })
+
+  output$dt_viz <- DT::renderDataTable({
+    req(actual_but$active)
+    if (actual_but$active != "table") return()
+    req(data_down())
+    df <- data_down()
+    dtable <- DT::datatable(df,
+                            rownames = F,
+                            selection = 'none',
+                            options = list(
+                              scrollX = T,
+                              fixedColumns = TRUE,
+                              fixedHeader = TRUE,
+                              scrollY = "500px"
+                            ))
+
+    dtable
+  })
 
 
   output$viz_view <- renderUI({
@@ -340,7 +340,7 @@ server <- function(input, output, session) {
 
   observe({
     dsmodules::downloadTableServer("dropdown_table",
-                                   element = data_viz(),
+                                   element = data_down(),
                                    formats = c("csv", "xlsx", "json"))
     dsmodules::downloadImageServer("download_viz",
                                    element = viz_down(),
