@@ -1,0 +1,17 @@
+filtros:
+  label:
+  inputs:
+    - tender_year
+    - country
+    - ATC.product_name
+    - InsId_rb
+
+
+
+
+
+
+
+
+
+

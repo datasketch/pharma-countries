@@ -1,0 +1,50 @@
+---
+tender_year:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Tender year
+    min: sel_date_min_opts()
+    max: sel_date_max_opts()
+    value: sel_date_mean_opts()
+    sep: ""
+    width: '5px'
+
+country:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Country
+    choices: sel_country()
+    multiple: true
+    options:
+      placeholder: All
+      plugins:
+      - - remove_button
+      - - drag_drop
+
+
+ATC.product_name:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: ATC
+    choices: sel_atc()
+    multiple: true
+    options:
+      placeholder: All
+      plugins:
+      - - remove_button
+      - - drag_drop
+
+InsId_rb:
+  show: true
+  input_type: radioButtons
+  input_params:
+    label: "Number value"
+    choices: sel_opts()
+
+
+
+
+

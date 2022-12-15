@@ -2,19 +2,33 @@
 
 #' @import dplyr
 #' @export
-filtering_list <- function(df, list_params = NULL){
+filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
 
   # list_params=list(id_country = NULL, id_anio=2010)
   # length(list_params)
   # names(list_params[1])
-
+  if(is.null(seq_var)) seq_var=""
+  print(colnames(df))
+  print("intofilterinlist")
+  # print(list_params)
+  # print(list_params[-4])
+  list_params= list_params[-4]
   for(i in 1:length(list_params)) {
-
-    df$temp <-  df[[names(list_params[i])]]
-    if(!is.null(list_params[[ i ]]))  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
-
+    print(names(list_params[i]))
+    print(list_params[i])
+    if(!is.null(names(list_params[i]))){
+         print("no name null")
+        if(!is.null(list_params[[ i ]])) {
+          print("no param null")
+          print(names(list_params[i]))
+          df$temp <-  df[[names(list_params[i])]]
+          if(names(list_params[i])!=seq_var)  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+          else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
+        }
+     }
   }
+  print("Outlopp")
   df
 
 }
@@ -201,3 +215,4 @@ creating_detail_data <- function(df, click, type_viz, parameters_col=NULL,select
   }
   html_detail
 }
+
