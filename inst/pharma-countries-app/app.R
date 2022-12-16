@@ -14,6 +14,9 @@ webshot::install_phantomjs()
 
 ui <- panelsPage(
   includeCSS("www/custom.css"),
+  includeCSS("https://www.w3schools.com/w3css/4/w3.css"),
+  includeScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"),
+  includeCSS("https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"),
   panel(title = "Filters",
         id = "pharma-panel",
         can_collapse = TRUE,
@@ -364,9 +367,27 @@ server <- function(input, output, session) {
   })
 
   output$click_info  <- renderUI({
-    tx <- HTML("<div class = 'click'>
-               <img src='img/click/click.svg' class = 'click-img'/><br/>
-               <b>Click</b> on the visualization to see more information.")
+    tx <- HTML('<div class="w3-container">
+                 <h2>W3.CSS Modal</h2>
+                 <button onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;block&quot;" class="w3-button w3-black">i</button>
+
+                 <div id="id01" class="w3-modal">
+                 <div class="w3-modal-content">
+                 <div class="w3-container">
+                 <span onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;none&quot;" class="w3-button w3-display-topright">&times;</span>
+                 <p>Some text. Some text. Some text.</p>
+                 <p>Some text. Some text. Some text.</p>
+                 </div>
+                 </div>
+                 </div>
+                 </div>')
+    tx <- HTML('<div id="ex1" class="modal">
+      <p>Thanks for clicking. That felt good.</p>
+      <a href="#" rel="modal:close">Close</a>
+        </div>
+
+        <!-- Link to open the modal -->
+        <p><a href="#ex1" rel="modal:open">Open Modal</a></p>')
 
     req(data_down())
 
