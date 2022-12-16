@@ -9,26 +9,18 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   # length(list_params)
   # names(list_params[1])
   if(is.null(seq_var)) seq_var=""
-  print(colnames(df))
-  print("intofilterinlist")
-  # print(list_params)
-  # print(list_params[-4])
+
   list_params= list_params[-4]
   for(i in 1:length(list_params)) {
-    print(names(list_params[i]))
-    print(list_params[i])
     if(!is.null(names(list_params[i]))){
-         print("no name null")
         if(!is.null(list_params[[ i ]])) {
-          print("no param null")
-          print(names(list_params[i]))
           df$temp <-  df[[names(list_params[i])]]
           if(names(list_params[i])!=seq_var)  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
           else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
         }
      }
   }
-  print("Outlopp")
+  ##print("Outlopp")
   df
 
 }
@@ -131,7 +123,7 @@ gen_html_detail_to_modal <- function(id,list_block) {
 #  var_test = "<p>Some text in the Modal..</p>"
 #  id="Uk paper"
 # #
-# print(gen_html_detail_to_modal(id,var_test) )
+# ##print(gen_html_detail_to_modal(id,var_test) )
 #
 
 
@@ -142,14 +134,11 @@ gen_html_detail_to_modal <- function(id,list_block) {
 gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("tender_title","country","tender_value_amount","unit_price","ATC.code","ATC.product_name")
-  if(is.null(colnames_show)) colnames_show <- c("tender_title","Country","Tender amount","Unit Price","ATC code","ATC product_name")
+  if(is.null(parameters_col)) parameters_col <- c("tender_title","country","tender_value_amount","unit_price","ATC.product_name")
+  if(is.null(colnames_show)) colnames_show <- c("tender_title","Country","Tender amount","Unit Price","ATC product_name")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
   if(is.null(tittle_paraph)) tittle_paraph <- "tender_title"
-
-
   da <- dplyr::select(df,one_of(parameters_col))
-  # da <- select(df,one_of(parameters_col))
   colnames(da) <- colnames_show
   v <- vector()
   list_temp2 <- ""
@@ -168,17 +157,14 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       #
       # }
       else {
-        ##print("entri3")
         v <- append(v,paste0("<B>",colnames(da[i]),"</B>",": ", da[j,i]))
 
       }
     }
-
     list_temp <- paste(v, "</BR>",collapse = " ")
     list_temp <- paste(list_temp,gen_html_detail_to_modal(title,list_temp))
     list_temp2 <- paste(list_temp2,list_temp, "</BR> </BR>")
   }
-
   list_temp2 <- shiny::HTML(list_temp2)
 
 }
@@ -188,8 +174,8 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
 #En una nueva versión la columna estática a filtrar podría ser reemplazada por selected_col
 #' @import dplyr
 #' @export
-creating_detail_data <- function(df, click, type_viz, parameters_col=NULL,selected_col=NULL, modal_col=NULL) {
-  if (is.null(clickId)) return()
+creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,selected_col=NULL, modal_col=NULL) {
+  # if (is.null(clickId)) return()
   if(type_viz=="map") { #Pendiente si la colunmna se llamará country
     eval <- list(country=clickId)
     df_filtered <- filtering_list(df,eval)
@@ -209,6 +195,7 @@ creating_detail_data <- function(df, click, type_viz, parameters_col=NULL,select
 
   }
   if(type_viz=="treemap") { #Pendiente si la colunmna se llamará country
+    eval <- list(country=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail(df, parameters_col)
 

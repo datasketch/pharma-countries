@@ -62,7 +62,7 @@ server <- function(input, output, session) {
 ###Panel izquierdo
   observe({
     if (is.null(input$viz_selection)) return()
-    print("in")
+    #print("in")
     # viz_rec <- c("map", "line", "bar", "treemap", "table")
     viz_rec <- c("line", "bar", "treemap", "table")
 
@@ -118,7 +118,7 @@ server <- function(input, output, session) {
 
    ############################## Data required
   data_down <-reactive({
-    ##print(actual_but)
+    ###print(actual_but)
     # req(parmesan_input())
     ls= parmesan_input()
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
@@ -141,14 +141,14 @@ server <- function(input, output, session) {
       df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "ATC.product_name")
     }
     if(actual_but$active == "line") {
-      print("vizdown")
-      print(actual_but$active)
-      print(ls$InsId_rb)
-      print(colnames(data_down()))
+      #print("vizdown")
+      #print(actual_but$active)
+      #print(ls$InsId_rb)
+      #print(colnames(data_down()))
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
-    print(df)
-    print("out")
+    #print(df)
+    #print("out")
     df
   })
 
@@ -174,7 +174,7 @@ server <- function(input, output, session) {
     req(viz_opts())
     if (is.null(vizFrtype())) return()
     viz=""
-    #print("viz")
+    ##print("viz")
     if(actual_but$active == "bar" | actual_but$active == "line" | actual_but$active == "treemap") {
 
         viz <- paste0("hgchmagic::", paste0("hgch_",actual_but$active, "_", vizFrtype()))
@@ -193,6 +193,9 @@ server <- function(input, output, session) {
     })
   })
 
+  observeEvent(input$hcClicked, {
+    #print(input$hcClicked)
+  }, ignoreInit = TRUE)
 
 
   viz_opts <- reactive({
@@ -200,9 +203,14 @@ server <- function(input, output, session) {
       req(actual_but$active)
 
       myFunc <- NULL
-      if (actual_but$active %in% c("bar", "treemap","line")) {
+      if (actual_but$active %in% c("bar", "treemap")) {
         myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
       }
+      if (actual_but$active %in% c("line")) {
+        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+      }
+
+
 
     opts <- list(
         data = data_viz(),
@@ -347,6 +355,44 @@ server <- function(input, output, session) {
                                    lib = "highcharter",
                                    formats = c("jpeg", "pdf", "png", "html"),
                                    file_prefix = "plot")
+  })
+
+  output$click_info  <- renderUI({
+
+
+    req(data_down())
+    print("intoclick")
+    print(input$hcClicked)
+    if (actual_but$active == "line") {
+      if(is.null(input$hcClicked$id)) return()
+      print("intoline")
+    #    #print(input$hcClicked$cat)
+      dt <- list("tender_year"=input$hcClicked$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      print(df_filtered |> head(1))
+      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+      tx
+    }
+
+    if (actual_but$active == "bar") {
+      if(is.null(input$hcClicked$id)) return()
+      dt <- list("ATC.product_name"=input$hcClicked$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      print(df_filtered |> head(2))
+      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+      tx
+    }
+
+    if (actual_but$active == "treemap") {
+
+      if(is.null(input$hcClicked$id)) return()
+      dt <- list("country"=input$hcClicked$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      print(df_filtered |> head(2))
+      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+      tx
+    }
+
   })
 
 
