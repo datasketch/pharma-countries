@@ -356,6 +356,7 @@ server <- function(input, output, session) {
 
 
     req(data_down())
+    req(actual_but$active)
     tx=""
      if (actual_but$active == "map") {
        if(is.null(input$lflt_viz_shape_click$id)) return()
