@@ -212,6 +212,9 @@ server <- function(input, output, session) {
           border_weight = 0.3
         )
         if (actual_but$active == "map") {
+
+          opts$map_bins <- 3
+          opts$map_color_scale = "Bins"
           opts$na_color <- "transparent"
           opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
                                        "#ffb446", "#ffca6b", "#ffdf98"))
