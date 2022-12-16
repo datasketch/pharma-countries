@@ -371,7 +371,7 @@ server <- function(input, output, session) {
                  <h2>W3.CSS Modal</h2>
                  <button onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;block&quot;" class="w3-button w3-black">i</button>
 
-                 <div id="id01" class="w3-modal">
+                 <div id="id01" class="w3-modal style="z-index: 999999 !important;">
                  <div class="w3-modal-content">
                  <div class="w3-container">
                  <span onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;none&quot;" class="w3-button w3-display-topright">&times;</span>
@@ -381,13 +381,13 @@ server <- function(input, output, session) {
                  </div>
                  </div>
                  </div>')
-    tx <- HTML('<div id="ex1" class="modal">
-      <p>Thanks for clicking. That felt good.</p>
-      <a href="#" rel="modal:close">Close</a>
-        </div>
-
-        <!-- Link to open the modal -->
-        <p><a href="#ex1" rel="modal:open">Open Modal</a></p>')
+    # tx <- HTML('<div id="ex1" class="modal">
+    #   <p>Thanks for clicking. That felt good.</p>
+    #   <a href="#" rel="modal:close">Close</a>
+    #     </div>
+    #
+    #     <!-- Link to open the modal -->
+    #     <p><a href="#ex1" rel="modal:open">Open Modal</a></p>')
 
     req(data_down())
 
