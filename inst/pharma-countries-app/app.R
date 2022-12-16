@@ -141,7 +141,7 @@ server <- function(input, output, session) {
     if(actual_but$active == "line") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
-     if(all(is.na(df$mean))) df <- NULL
+     # if(all(is.na(df$mean))) df <- NULL
     df
   })
 
@@ -183,6 +183,8 @@ server <- function(input, output, session) {
     tryCatch({
         req(data_viz())
         req(actual_but$active)
+        print(colnames(data_viz()))
+
 
         myFunc <- NULL
         if (actual_but$active %in% c("bar", "treemap")) {
@@ -282,9 +284,13 @@ server <- function(input, output, session) {
 
   output$viz_view <- renderUI({
     tryCatch({
+
       req(actual_but$active)
       viz <- actual_but$active
       if (viz %in% c("map")) {
+        print(data_viz())
+        if(all(is.na(data_viz()$mean))) return("No information available")
+
         shinycustomloader::withLoader(
           leaflet::leafletOutput("lflt_viz", height = 600),
           type = "html", loader = "loader4"
@@ -295,6 +301,8 @@ server <- function(input, output, session) {
           type = "html", loader = "loader4"
         )
       } else {
+        if(all(is.na(data_viz()$mean))) return("No information available")
+
         #shinycustomloader::withLoader(
         highcharter::highchartOutput("hgch_viz", height = 600)#,
         #   type = "html", loader = "loader4"
@@ -405,7 +413,7 @@ server <- function(input, output, session) {
     }
     # print(tx)
     if(tx == "" | is.null(tx))
-      tx ="Información no encontrada"
+      tx ="No information available"
     tx
   })
 
