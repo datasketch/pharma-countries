@@ -40,7 +40,7 @@ ui <- panelsPage(
         can_collapse = TRUE,
         width = 300,
         color = "chardonnay",
-        body =  div(
+        body =  div(style="overflow: scroll;max-height: 620px",
           shinycustomloader::withLoader(
             uiOutput("click_info"),
             type = "html", loader = "loader4"
@@ -62,9 +62,7 @@ server <- function(input, output, session) {
 ###Panel izquierdo
   observe({
     if (is.null(input$viz_selection)) return()
-    #print("in")
-    viz_rec <- c("map", "line", "bar", "treemap", "table")
-    # viz_rec <- c("line", "bar", "treemap", "table")
+     viz_rec <- c("map", "line", "bar", "treemap", "table")
 
     if (input$viz_selection %in% viz_rec) {
       actual_but$active <- input$viz_selection
@@ -96,10 +94,6 @@ server <- function(input, output, session) {
     unique(data$ATC.product_name)
   })
 
-  sel_opts <- reactive({
-    c("tender_value_amount","unit_price")
-
-  })
 
 ####### Generación Parmensan
 
@@ -145,28 +139,13 @@ server <- function(input, output, session) {
       df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "ATC.product_name")
     }
     if(actual_but$active == "line") {
-      # print("dataviz")
-      # print(actual_but$active)
-      # print(ls$InsId_rb)
-      # print(colnames(data_down()))
-     df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
+      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
-    #print(df)
-    #print("out")
-    if(all(is.na(df$mean))) df <- NULL
+     if(all(is.na(df$mean))) df <- NULL
     df
   })
 
  ########################### type viz
-
-  # viz_down <-reactive({
-  #   req(data_viz())
-  #   selecting_viz_typeGraph(actual_but$active,actual_but$active)
-  #
-  #   viz <- viz_selection(data_viz(), dic_pharma, actual_but$active)
-  #   suppressWarnings(do.call(eval(parse(text=viz)),viz_opts()))
-  #
-  # })
 
   vizFrtype <- reactive({
       req(actual_but$active)
@@ -179,7 +158,7 @@ server <- function(input, output, session) {
     req(viz_opts())
     if (is.null(vizFrtype())) return()
     viz=""
-    ##print("viz")
+
     if(actual_but$active == "bar" | actual_but$active == "line" | actual_but$active == "treemap") {
 
         viz <- paste0("hgchmagic::", paste0("hgch_",actual_but$active, "_", vizFrtype()))
@@ -198,9 +177,6 @@ server <- function(input, output, session) {
     })
   })
 
-  observeEvent(input$hcClicked, {
-    #print(input$hcClicked)
-  }, ignoreInit = TRUE)
 
 
   viz_opts <- reactive({
@@ -331,7 +307,7 @@ server <- function(input, output, session) {
 
   output$viz_icons <- renderUI({
     viz <- c("map", "line", "bar", "treemap", "table")
-     viz_label <- c("Map", "Line", "Bar", "Treemap", "Table")
+    viz_label <- c("Map", "Line", "Bar", "Treemap", "Table")
 
 
     suppressWarnings(
@@ -381,24 +357,16 @@ server <- function(input, output, session) {
 
     req(data_down())
     tx=""
-    print("intoclick")
-    print(input$hcClicked)
-    print(input$lflt_viz_shape_click)
-
      if (actual_but$active == "map") {
        if(is.null(input$lflt_viz_shape_click$id)) return()
-       # if (!is.null(input$lflt_viz_shape_click$id)) {
           dt <- list("country" =input$lflt_viz_shape_click$id)
           df_filtered <- filtering_list(data_down(),dt)
-          print(df_filtered |> head(1))
           tx <- creating_detail_data(df_filtered , input$lflt_viz_shape_click$id, actual_but$active)
-         tx
-       # }
+          tx
     }
     if (actual_but$active == "line") {
       if(is.null(input$hcClicked$id)) return()
-      print("intoline")
-    #    #print(input$hcClicked$cat)
+
       dt <- list("tender_year"=input$hcClicked$id)
       df_filtered <- filtering_list(data_down(),dt)
       print(df_filtered |> head(1))
@@ -410,8 +378,6 @@ server <- function(input, output, session) {
       if(is.null(input$hcClicked$id)) return()
       dt <- list("ATC.product_name"=input$hcClicked$id)
       df_filtered <- filtering_list(data_down(),dt)
-      print(df_filtered |> head(2))
-      print(nrow(df_filtered))
       tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
       tx
     }
@@ -421,7 +387,6 @@ server <- function(input, output, session) {
       if(is.null(input$hcClicked$id)) return()
       dt <- list("country"=input$hcClicked$id)
       df_filtered <- filtering_list(data_down(),dt)
-      print(df_filtered |> head(2))
       tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
       tx
     }

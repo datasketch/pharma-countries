@@ -42,7 +42,11 @@ InsId_rb:
   input_type: radioButtons
   input_params:
     label: "Number value"
-    choices: sel_opts()
+    choices:
+      Tender amount:
+      - tender_value_amount
+      Unit price:
+      - unit_price
 
 
 
