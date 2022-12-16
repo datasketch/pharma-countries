@@ -63,8 +63,8 @@ server <- function(input, output, session) {
   observe({
     if (is.null(input$viz_selection)) return()
     #print("in")
-    # viz_rec <- c("map", "line", "bar", "treemap", "table")
-    viz_rec <- c("line", "bar", "treemap", "table")
+    viz_rec <- c("map", "line", "bar", "treemap", "table")
+    # viz_rec <- c("line", "bar", "treemap", "table")
 
     if (input$viz_selection %in% viz_rec) {
       actual_but$active <- input$viz_selection
@@ -118,6 +118,7 @@ server <- function(input, output, session) {
 
    ############################## Data required
   data_down <-reactive({
+
     ###print(actual_but)
     # req(parmesan_input())
     ls= parmesan_input()
@@ -125,6 +126,9 @@ server <- function(input, output, session) {
     #TODO hacer en preprocces
     df$unit_price <- as.numeric(df$unit_price)
     df <- filtering_list(df,ls,"tender_year")
+    print("datadown")
+    print(nrow(df))
+    print(colnames(df))
     df
   })
 
@@ -141,14 +145,15 @@ server <- function(input, output, session) {
       df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "ATC.product_name")
     }
     if(actual_but$active == "line") {
-      #print("vizdown")
-      #print(actual_but$active)
-      #print(ls$InsId_rb)
-      #print(colnames(data_down()))
-      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
+      # print("dataviz")
+      # print(actual_but$active)
+      # print(ls$InsId_rb)
+      # print(colnames(data_down()))
+     df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
     #print(df)
     #print("out")
+    if(all(is.na(df$mean))) df <- NULL
     df
   })
 
@@ -199,66 +204,76 @@ server <- function(input, output, session) {
 
 
   viz_opts <- reactive({
-      req(data_viz())
-      req(actual_but$active)
+    tryCatch({
+        req(data_viz())
+        req(actual_but$active)
 
-      myFunc <- NULL
-      if (actual_but$active %in% c("bar", "treemap")) {
-        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
-      }
-      if (actual_but$active %in% c("line")) {
-        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
-      }
-
-
-
-    opts <- list(
-        data = data_viz(),
-        orientation = "hor",
-        ver_title = " ",
-        hor_title = " ",
-        label_wrap_legend = 100,
-        label_wrap = 40,
-        background_color = "#ffffff",
-        axis_line_y_size = 1,
-        axis_line_color = "#dbd9d9",
-        grid_y_color = "#dbd9d9",
-        grid_x_color = "#fafafa",
-        cursor = "pointer",
-        map_tiles = "OpenStreetMap",
-        legend_position = "bottomleft",
-        border_weight = 0.3
-      )
-      if (actual_but$active == "map") {
-        opts$na_color <- "transparent"
-        opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
-                                     "#ffb446", "#ffca6b", "#ffdf98"))
-      } else {
-        opts$clickFunction <- htmlwidgets::JS(myFunc)
-        opts$palette_colors <- "#ef4e00"
-        if (actual_but$active == "line") {
-          opts$marker_enabled <- FALSE
-          opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
-                                   "#ffeea8", "#da3592","#0000ff")
+        myFunc <- NULL
+        if (actual_but$active %in% c("bar", "treemap")) {
+          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
         }
-      }
+        if (actual_but$active %in% c("line")) {
+          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+        }
 
-      if (actual_but$active == "treemap") {
-        opts$dataLabels_align <- "middle"
-        opts$dataLabels_inside <- TRUE
-        opts$dataLabels_show <- TRUE
-        opts$legend_show <- FALSE
-      }
 
-      opts
+
+      opts <- list(
+          data = data_viz(),
+          orientation = "hor",
+          ver_title = " ",
+          hor_title = " ",
+          label_wrap_legend = 100,
+          label_wrap = 40,
+          background_color = "#ffffff",
+          axis_line_y_size = 1,
+          axis_line_color = "#dbd9d9",
+          grid_y_color = "#dbd9d9",
+          grid_x_color = "#fafafa",
+          cursor = "pointer",
+          map_tiles = "OpenStreetMap",
+          legend_position = "bottomleft",
+          border_weight = 0.3
+        )
+        if (actual_but$active == "map") {
+          opts$na_color <- "transparent"
+          opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
+                                       "#ffb446", "#ffca6b", "#ffdf98"))
+        } else {
+          opts$clickFunction <- htmlwidgets::JS(myFunc)
+          opts$palette_colors <- "#ef4e00"
+          if (actual_but$active == "line") {
+            opts$marker_enabled <- FALSE
+            opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                     "#ffeea8", "#da3592","#0000ff")
+          }
+        }
+
+        if (actual_but$active == "treemap") {
+          opts$dataLabels_align <- "middle"
+          opts$dataLabels_inside <- TRUE
+          opts$dataLabels_show <- TRUE
+          opts$legend_show <- FALSE
+        }
+
+        opts
+      },
+      error = function(cond) {
+        return()
+      })
     })
 
 
   ############################### Render
   output$hgch_viz <- highcharter::renderHighchart({
-    req(actual_but$active)
-    if (actual_but$active %in% c("table", "map")) return()
-    viz_down()
+    tryCatch({
+        req(actual_but$active)
+        if (actual_but$active %in% c("table", "map")) return()
+        viz_down()
+    },
+    error = function(cond) {
+      return()
+    })
   })
   #
   output$lflt_viz <- leaflet::renderLeaflet({
@@ -287,33 +302,37 @@ server <- function(input, output, session) {
 
 
   output$viz_view <- renderUI({
-    req(actual_but$active)
-    viz <- actual_but$active
-    if (viz %in% c("map")) {
-      shinycustomloader::withLoader(
-        leaflet::leafletOutput("lflt_viz", height = 600),
-        type = "html", loader = "loader4"
-      )
-    } else if (viz == "table") {
-      shinycustomloader::withLoader(
-        DT::dataTableOutput("dt_viz", height = 600, width = 600 ),
-        type = "html", loader = "loader4"
-      )
-    } else {
-      #shinycustomloader::withLoader(
-      highcharter::highchartOutput("hgch_viz", height = 600)#,
-      #   type = "html", loader = "loader4"
-      # )
-    }
+    tryCatch({
+      req(actual_but$active)
+      viz <- actual_but$active
+      if (viz %in% c("map")) {
+        shinycustomloader::withLoader(
+          leaflet::leafletOutput("lflt_viz", height = 600),
+          type = "html", loader = "loader4"
+        )
+      } else if (viz == "table") {
+        shinycustomloader::withLoader(
+          DT::dataTableOutput("dt_viz", height = 600, width = 600 ),
+          type = "html", loader = "loader4"
+        )
+      } else {
+        #shinycustomloader::withLoader(
+        highcharter::highchartOutput("hgch_viz", height = 600)#,
+        #   type = "html", loader = "loader4"
+        # )
+      }
+    },
+    error = function(cond) {
+      return()
+    })
   })
 
   ############################## Graph
 
   output$viz_icons <- renderUI({
-    # viz <- c("map", "line", "bar", "treemap", "table")
-    # viz_label <- c("Map", "Line", "Bar", "Treemap", "Table")
-    viz <- c("line", "bar", "treemap", "table")
-    viz_label <- c("Line", "Bar", "Treemap", "Table")
+    viz <- c("map", "line", "bar", "treemap", "table")
+     viz_label <- c("Map", "Line", "Bar", "Treemap", "Table")
+
 
     suppressWarnings(
       shinyinvoer::buttonImageInput("viz_selection",
@@ -361,8 +380,21 @@ server <- function(input, output, session) {
 
 
     req(data_down())
+    tx=""
     print("intoclick")
     print(input$hcClicked)
+    print(input$lflt_viz_shape_click)
+
+     if (actual_but$active == "map") {
+       if(is.null(input$lflt_viz_shape_click$id)) return()
+       # if (!is.null(input$lflt_viz_shape_click$id)) {
+          dt <- list("country" =input$lflt_viz_shape_click$id)
+          df_filtered <- filtering_list(data_down(),dt)
+          print(df_filtered |> head(1))
+          tx <- creating_detail_data(df_filtered , input$lflt_viz_shape_click$id, actual_but$active)
+         tx
+       # }
+    }
     if (actual_but$active == "line") {
       if(is.null(input$hcClicked$id)) return()
       print("intoline")
@@ -379,6 +411,7 @@ server <- function(input, output, session) {
       dt <- list("ATC.product_name"=input$hcClicked$id)
       df_filtered <- filtering_list(data_down(),dt)
       print(df_filtered |> head(2))
+      print(nrow(df_filtered))
       tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
       tx
     }
@@ -392,7 +425,7 @@ server <- function(input, output, session) {
       tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
       tx
     }
-
+    tx
   })
 
 
