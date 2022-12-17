@@ -365,29 +365,11 @@ server <- function(input, output, session) {
 
   output$click_info  <- renderUI({
 
-    tx <-HTML(paste("<div style='display: inline-flex; color:black !important;'><B>Поставка аптечек для оказания первой помощи для нужд Тверского филиала ФГУП «Ведомственная охрана» Минэнерго
-России</B></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Country </div></B>  <div>&nbsp; RUSSIA </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Tender amount </div></B>  <div>&nbsp; 56,100 </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Unit Price </div></B>  <div>&nbsp; 56,100 </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; ATC product_name </div></B>  <div>&nbsp; ipilimumab </div></div> </BR> <button id='bm2'>i</button> <div id='mm2' class='modal-c' <div class='modal-content-c'> <span class='close-c'>&times;</span> <p> lp </p> </div> </div>",
-                    '
+    tx <- HTML("<div class = 'click'>
+                <img src='img/click/click.svg' class = 'click-img'/><br/>
+                <b>Click</b> on the visualization to see more information.")
 
-    <script  type="text/javascript">
-var bm2 = document.getElementById("bm2");
-var mm2 = document.getElementById("mm2");
-var cm2 = document.getElementsByClassName("close-c")[0];
-bm2.onclick = function() {
-mm2.style.display = "block";
-}
-cm2.onclick = function() {
-mm2.style.display = "none";
-}
- window.onclick = function(event) {
-if (event.target ==  mm2  ){
-mm2.style.display = "none";
- } } </script> </BR> </BR>' ))
 
-    # tx <- HTML("<div class = 'click'>
-    #            <img src='img/click/click.svg' class = 'click-img'/><br/>
-    #            <b>Click</b> on the visualization to see more information.")
-    #
 
     req(data_down())
 
@@ -400,7 +382,7 @@ mm2.style.display = "none";
           dt <- list("country" =input$lflt_viz_shape_click$id)
           df_filtered <- filtering_list(data_down(),dt)
           print(nrow(df_filtered))
-          df_filtered <- df_filtered |> head(2)
+          df_filtered <- df_filtered |> head(1000)
           tx <- creating_detail_data(df_filtered , input$lflt_viz_shape_click$id, actual_but$active)
           print(tx)
           tx
@@ -408,31 +390,30 @@ mm2.style.display = "none";
     if (actual_but$active == "line") {
       if(is.null(input$hcClicked$id)) return(tx)
 
-      dt <- list("tender_year"=input$hcClicked$id)
-      df_filtered <- filtering_list(data_down(),dt)
-      print(df_filtered |> head(1))
-      print(nrow(df_filtered))
-      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-      tx
+          dt <- list("tender_year"=input$hcClicked$id)
+          df_filtered <- filtering_list(data_down(),dt)
+          df_filtered <- df_filtered |> head(1000)
+          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+          tx
     }
 
     if (actual_but$active == "bar") {
       if(is.null(input$hcClicked$id)) return(tx)
-      dt <- list("ATC.product_name"=input$hcClicked$id)
-      df_filtered <- filtering_list(data_down(),dt)
-      print(nrow(df_filtered))
-      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-      tx
+          dt <- list("ATC.product_name"=input$hcClicked$id)
+          df_filtered <- filtering_list(data_down(),dt)
+          df_filtered <- df_filtered |> head(1000)
+          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+          tx
     }
 
     if (actual_but$active == "treemap") {
 
       if(is.null(input$hcClicked$id)) return(tx)
-      dt <- list("country"=input$hcClicked$id)
-      df_filtered <- filtering_list(data_down(),dt)
-      print(nrow(df_filtered))
-      tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-      tx
+          dt <- list("country"=input$hcClicked$id)
+          df_filtered <- filtering_list(data_down(),dt)
+          df_filtered <- df_filtered |> head(1000)
+          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
+          tx
     }
     # print(tx)
     if(tx == "" | is.null(tx))

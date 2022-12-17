@@ -30,7 +30,7 @@
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-
+  padding: 15px;
   left: 450px;
   top: 250px;
   width: 40%; /* Full width */
@@ -39,6 +39,15 @@
   background-color: #fefefe;
 
 
+}
+
+.style_section {
+  padding-top: 0 !important;
+}
+
+#output_tender_year {
+ margin-bottom: 10px;
+ margin-top: -10px;
 }
 
 /* Modal Content */
