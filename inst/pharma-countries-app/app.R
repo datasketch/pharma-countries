@@ -19,7 +19,8 @@ ui <- panelsPage(
         can_collapse = TRUE,
         width = 350,
         body =  div(
-          uiOutput("controls")
+          uiOutput("controls"),
+          uiOutput("sel_slide_opts")
         )
   ),
   panel(title = "Visualization",
@@ -95,6 +96,14 @@ server <- function(input, output, session) {
   })
 
 
+
+  output$sel_slide_opts <- renderUI({
+    if (is.null(actual_but$active)) return()
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",min=10, max=50, value=c(1,20))
+
+  })
+
+
 ####### Generación Parmensan
 
   parmesan <- parmesan_load()
@@ -119,10 +128,9 @@ server <- function(input, output, session) {
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
     #TODO hacer en preprocces
     df$unit_price <- as.numeric(df$unit_price)
-    df <- filtering_list(df,ls,"tender_year")
-    print("datadown")
-    print(nrow(df))
-    print(colnames(df))
+
+    df <- filtering_list(df, ls, "tender_year")
+
     df
   })
 
@@ -136,7 +144,11 @@ server <- function(input, output, session) {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "country")
     }
     if(actual_but$active == "bar") {
+      # req(input$sel_slide_opts)
       df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "ATC.product_name")
+
+      df <- df |> filter(!is.na(mean))
+      if(!is.null(input$sel_slide_opts)) df <- df[c(as.numeric(input$sel_slide_opts[1]):as.numeric(input$sel_slide_opts[2])),]
     }
     if(actual_but$active == "line") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
