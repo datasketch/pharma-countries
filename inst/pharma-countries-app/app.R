@@ -14,9 +14,6 @@ webshot::install_phantomjs()
 
 ui <- panelsPage(
   includeCSS("www/custom.css"),
-  includeCSS("https://www.w3schools.com/w3css/4/w3.css"),
-  includeScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"),
-  includeCSS("https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"),
   panel(title = "Filters",
         id = "pharma-panel",
         can_collapse = TRUE,
@@ -367,27 +364,30 @@ server <- function(input, output, session) {
   })
 
   output$click_info  <- renderUI({
-    tx <- HTML('<div class="w3-container">
-                 <h2>W3.CSS Modal</h2>
-                 <button onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;block&quot;" class="w3-button w3-black">i</button>
 
-                 <div id="id01" class="w3-modal style="z-index: 999999 !important;">
-                 <div class="w3-modal-content">
-                 <div class="w3-container">
-                 <span onclick="document.getElementById(&quot;id01&quot;).style.display=&quot;none&quot;" class="w3-button w3-display-topright">&times;</span>
-                 <p>Some text. Some text. Some text.</p>
-                 <p>Some text. Some text. Some text.</p>
-                 </div>
-                 </div>
-                 </div>
-                 </div>')
-    # tx <- HTML('<div id="ex1" class="modal">
-    #   <p>Thanks for clicking. That felt good.</p>
-    #   <a href="#" rel="modal:close">Close</a>
-    #     </div>
+    tx <-HTML(paste("<div style='display: inline-flex; color:black !important;'><B>Поставка аптечек для оказания первой помощи для нужд Тверского филиала ФГУП «Ведомственная охрана» Минэнерго
+России</B></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Country </div></B>  <div>&nbsp; RUSSIA </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Tender amount </div></B>  <div>&nbsp; 56,100 </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; Unit Price </div></B>  <div>&nbsp; 56,100 </div></div> </BR> <div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp; ATC product_name </div></B>  <div>&nbsp; ipilimumab </div></div> </BR> <button id='bm2'>i</button> <div id='mm2' class='modal-c' <div class='modal-content-c'> <span class='close-c'>&times;</span> <p> lp </p> </div> </div>",
+                    '
+
+    <script  type="text/javascript">
+var bm2 = document.getElementById("bm2");
+var mm2 = document.getElementById("mm2");
+var cm2 = document.getElementsByClassName("close-c")[0];
+bm2.onclick = function() {
+mm2.style.display = "block";
+}
+cm2.onclick = function() {
+mm2.style.display = "none";
+}
+ window.onclick = function(event) {
+if (event.target ==  mm2  ){
+mm2.style.display = "none";
+ } } </script> </BR> </BR>' ))
+
+    # tx <- HTML("<div class = 'click'>
+    #            <img src='img/click/click.svg' class = 'click-img'/><br/>
+    #            <b>Click</b> on the visualization to see more information.")
     #
-    #     <!-- Link to open the modal -->
-    #     <p><a href="#ex1" rel="modal:open">Open Modal</a></p>')
 
     req(data_down())
 
@@ -400,7 +400,9 @@ server <- function(input, output, session) {
           dt <- list("country" =input$lflt_viz_shape_click$id)
           df_filtered <- filtering_list(data_down(),dt)
           print(nrow(df_filtered))
+          df_filtered <- df_filtered |> head(2)
           tx <- creating_detail_data(df_filtered , input$lflt_viz_shape_click$id, actual_but$active)
+          print(tx)
           tx
     }
     if (actual_but$active == "line") {

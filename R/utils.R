@@ -95,17 +95,56 @@ selecting_viz_typeGraph <- function(df, type_viz) {
 #' @import shiny
 #' @export
 #'
-gen_html_detail_to_modal <- function(id,list_block) {
+gen_html_detail_to_modal <- function(id,list_block,...) {
+  idb <- paste("b",id,sep="")
+  idm <- paste("m",id, sep="")
+  idc <- paste("c",id, sep="")
   # myBtn <- "afganistan"
-  button_modal <- paste("<button id='",id,"'>i</button>",sep="")
-  div_modal <- paste("<div id='",id,"_",id,"' class='modal'", sep="")
-  div_modal_content <- "<div class='modal-content'>"
-  span_modal <- "<span class='close'>&times;</span>"
-  p_modal <- paste("<p>",list_block,"</p>")
+  open_style <- ("<style>")
+  c <- paste(".",idc)
+  c1 <-"{
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+ }"
+  c11 <- paste(".",idc,":hover,.",idc,":focus")
+  c111 <- "{
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  </style>"
+  style_c <- paste(open_style,c ,c1,c111)
+  button_modal <- paste(style_c ,"<button id='", idb,"'>i</button>", sep="")
+  div_modal <- paste("<div id='", idm,"' class='modal-c'", sep="")
+  div_modal_content <- "<div class='modal-content-c'>"
+  span_modal <- paste("<span class='", idc,"'>&times;</span>", sep="")
+  p_modal <- paste("<p>", list_block,"</p>")
   div_model_close_content <- "</div>"
   div_model_close <- "</div>"
+
+  open_script <- '<script  type="text/javascript">'
+  var1 <- paste("var ", idb,' = document.getElementById("', idb,'");', sep="")
+  var2 <- paste("var ", idm,' = document.getElementById("', idm,'");', sep="")
+  var3 <- paste("var ", idc,' = document.getElementsByClassName("', idc,'")[0];', sep="")
+  varn <- paste(var1,var2,var3,sep="\n")
+  fb1 <-  paste(idb,".onclick = function() {",sep="")
+  fb11 <- paste(idm,'.style.display = "block";',sep="")
+  fb111 <- "}"
+  fbn <- paste(fb1,fb11,fb111,sep="\n")
+  fc1 <-  paste(idc,".onclick = function() {",sep="")
+  fc11 <- paste(idm,'.style.display = "none";',sep="")
+  fc111 <- "}"
+  fcn <- paste(fc1,fc11,fc111,sep="\n")
+  w1 <- " window.onclick = function(event) {"
+  w11 <- paste("if (event.target == ", idm, " ){" )
+  w111 <- paste(idm,'.style.display = "none";',sep="")
+  w1111 <- " } } </script>"
+  wn <- paste(w1,w11,w111,w1111,sep="\n")
+  jsblk <-paste( open_script, varn,fbn,fcn,wn,sep="\n")
   block_modal <- paste(button_modal,div_modal,div_modal_content, span_modal,p_modal,div_model_close_content, div_model_close, sep = " ")
-  block_modal
+  block_modal2 <- paste(block_modal,jsblk,sep="\n" )
+  block_modal2
     #eEjemplo tomaddo de:
     # <!-- The Modal -->
     # <div id='myModal' class='modal'>
@@ -125,6 +164,7 @@ gen_html_detail_to_modal <- function(id,list_block) {
 # #
 # ##print(gen_html_detail_to_modal(id,var_test) )
 #
+
 
 
 
@@ -149,7 +189,7 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
     for(i in 1:ncol(da)) {
       if(colnames(da[i]) == tittle_paraph ) {
         title=da[j,i]
-        v <- append(v,paste0("<B>",da[j,i],"</B>"))
+        v <- append(v,paste0("<div style='display: inline-flex; color:black !important;'><B>",da[j,i],"</B></div>"))
 
       }
       # if(colnames(da[i])==modal_col_show ) {  # Esta sección llamará al modal
@@ -157,12 +197,15 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       #
       # }
       else {
-        v <- append(v,paste0("<B>",colnames(da[i]),"</B>",": ", da[j,i]))
+        a=da[j,i]
+        if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
+        v <- append(v,paste("<div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+                            colnames(da[i]),"</div></B>"," <div>&nbsp;",a,"</div></div>"))
 
       }
     }
     list_temp <- paste(v, "</BR>",collapse = " ")
-    list_temp <- paste(list_temp,gen_html_detail_to_modal(title,list_temp))
+    list_temp <- paste(list_temp,gen_html_detail_to_modal(paste("m",j, sep=""),list_temp))
     list_temp2 <- paste(list_temp2,list_temp, "</BR> </BR>")
   }
   list_temp2 <- shiny::HTML(list_temp2)

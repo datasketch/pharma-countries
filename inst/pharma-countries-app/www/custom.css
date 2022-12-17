@@ -23,30 +23,49 @@
 
 }
 
-.jquery-modal {
-
-    z-index: 99999 !important; /* Sit on top - higher than any other z-index in your site*/
-}
-
-.w3-modal{
-  left: 140;
-  right: 140;
-  top: 140;
-  bottom: 140;
-  z-index: 999999 !important;
-}
 
 
-.w3-button{
-  background-color: #C84210 !important;
+.modal-c {
+
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+
+  left: 450px;
+  top: 250px;
+  width: 40%; /* Full width */
+  height: 200px; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #fefefe;
 
 
 }
 
-.modal {
-
-    z-index: 999999 !important; /* Sit on top - higher than any other z-index in your site*/
+/* Modal Content */
+.modal-content-c {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 100%;
 }
+
+/* The Close Button */
+.close-c {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-c:hover,
+.close-c:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
 .panel-header {
   padding: 1rem 1.5rem 0rem 2rem;
   align-items: self-start;
