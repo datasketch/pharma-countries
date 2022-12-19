@@ -9,6 +9,14 @@
   text-transform: capitalize
 }
 
+.button-modal-det{
+  color: #e73247;
+  border: 1px solid var(--unnamed-color-e73247);
+  background: #00000000 0% 0% no-repeat padding-box;
+  border: transparent;
+  opacity: 1;
+}
+
 .irs-bar {
     color: #3695D8  !important;
     background-color: #3695D8  !important;

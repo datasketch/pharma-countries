@@ -115,7 +115,7 @@ gen_html_detail_to_modal <- function(id,list_block,...) {
   cursor: pointer;
   </style>"
   style_c <- paste(open_style,c ,c1,c111)
-  button_modal <- paste(style_c ,"<button id='", idb,"'>i</button>", sep="")
+  button_modal <- paste(style_c ,"<button class='button-modal-det fa fa-info-circle' role='presentation' aria-label='info-circle icon' id='", idb,"'></button>", sep="")
   div_modal <- paste("<div id='", idm,"' class='modal-c'", sep="")
   div_modal_content <- "<div class='modal-content-c'>"
   span_modal <- paste("<span class='", idc,"'>&times;</span>", sep="")
@@ -197,10 +197,10 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       #
       # }
       else {
-        a=da[j,i]
+        a= stringi::stri_trim(da[j,i])
         if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
         v <- append(v,paste("<div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
-                            colnames(da[i]),"</div></B>"," <div>&nbsp;",a,"</div></div>"))
+                            stringi::stri_trim(colnames(da[i])),"</div></B>","<div><p>|",a,"</p></div></div>", sep=""))
 
       }
     }

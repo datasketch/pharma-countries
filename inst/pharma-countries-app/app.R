@@ -101,8 +101,16 @@ server <- function(input, output, session) {
   output$sel_slide_opts <- renderUI({
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10, min=1, max= sel_slide_opts_max(), value=c(1,20)) |>
-                                      bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10,
+                                                  min=1, max= sel_slide_opts_max(), value=c(1,20)) |>
+                                                  # shinyInput_label_embed(
+                                                  #   shiny_iconlink("info") %>%
+                                                  #     bs_embed_popover(
+                                                  #       title = "sel_slide_opts", content = "Choose a favorite", placement = "left"
+                                                  #     )
+                                                  # )
+
+                                       bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
 
   })
 
@@ -213,7 +221,7 @@ server <- function(input, output, session) {
     tryCatch({
         req(data_viz())
         req(actual_but$active)
-        print(colnames(data_viz()))
+        print((data_viz()))
 
 
         myFunc <- NULL
