@@ -102,7 +102,7 @@ server <- function(input, output, session) {
   output$sel_slide_opts <- renderUI({
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=9,
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10,
                                                   min=1, max= sel_slide_opts_max(), value=c(1,10)) |>
                                                   # shinyInput_label_embed(
                                                   #   shiny_iconlink("info") %>%
