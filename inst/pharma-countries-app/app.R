@@ -9,6 +9,7 @@ library(webshot2)
 library(DT)
 library(pharma.countries)
 library(shinypanels)
+library(bsplus)
 webshot::install_phantomjs()
 
 
@@ -100,7 +101,8 @@ server <- function(input, output, session) {
   output$sel_slide_opts <- renderUI({
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",min=1, max= sel_slide_opts_max(), value=c(1,20))
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10, min=1, max= sel_slide_opts_max(), value=c(1,20)) |>
+                                      bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
 
   })
 
