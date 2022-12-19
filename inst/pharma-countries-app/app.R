@@ -21,7 +21,8 @@ ui <- panelsPage(
         width = 350,
         body =  div(
           uiOutput("controls"),
-          uiOutput("sel_slide_opts")
+          uiOutput("sel_slide_opts"),
+          uiOutput("sel_check_opt"),
         )
   ),
   panel(title = "Visualization",
@@ -101,8 +102,8 @@ server <- function(input, output, session) {
   output$sel_slide_opts <- renderUI({
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10,
-                                                  min=1, max= sel_slide_opts_max(), value=c(1,20)) |>
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=9,
+                                                  min=1, max= sel_slide_opts_max(), value=c(1,10)) |>
                                                   # shinyInput_label_embed(
                                                   #   shiny_iconlink("info") %>%
                                                   #     bs_embed_popover(
@@ -119,13 +120,24 @@ server <- function(input, output, session) {
     req(actual_but$active)
     req(parmesan_input())
     if (actual_but$active == "bar") {
-        ls= parmesan_input()
+        ls <- parmesan_input()
         df <- filtering_list(data, ls, "tender_year")
         df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "ATC.product_name")
         df <- df |> filter(!is.na(mean))
         length(unique(df$ATC.product_name))
     }
   })
+
+    output$sel_check_opt <- renderUI({
+      req(data_down())
+      req(actual_but$active)
+      req(sel_slide_opts_max())
+
+      if (actual_but$active == "bar") {
+        checkboxInput("sel_check_opt","Sort by name",FALSE)
+      }
+
+    })
 
 
 
@@ -146,7 +158,7 @@ server <- function(input, output, session) {
 
    ############################## Data required
   data_down <-reactive({
-
+    tryCatch({
     ###print(actual_but)
     # req(parmesan_input())
     ls= parmesan_input()
@@ -157,6 +169,10 @@ server <- function(input, output, session) {
     df <- filtering_list(df, ls, "tender_year")
 
     df
+    },
+    error = function(cond) {
+      return()
+    })
   })
 
   data_viz <- reactive({
@@ -192,7 +208,7 @@ server <- function(input, output, session) {
   })
 
   viz_down  <- reactive({
-    req(actual_but$active)
+
     req(viz_opts())
     if (is.null(vizFrtype())) return()
     viz=""
@@ -274,6 +290,12 @@ server <- function(input, output, session) {
           opts$dataLabels_show <- TRUE
           opts$legend_show <- FALSE
         }
+        print("Prebar")
+        print(input$sel_check_opt)
+
+          if(actual_but$active == "bar"){
+            if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
+         }
 
         opts
       },
