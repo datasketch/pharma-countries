@@ -246,3 +246,20 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
   html_detail
 }
 
+#' @import dplyr
+#' @export
+counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
+  ######print(colname_group1)
+  ######print(names(df))
+  if(is.null(colname_group2)){
+    df <- df %>% group_by(across(all_of(colname_group1))) %>% summarize(count =n())
+  }else{
+
+    df <- df %>% group_by(across(all_of(colname_group1)),across(all_of(colname_group2))) %>% summarize(count =n())
+  }
+
+  if(!is.null(na_control)) { df <- df |> dplyr::filter(!is.na(count)) }
+
+  df
+}
+

@@ -13,9 +13,16 @@
     color: #3695D8  !important;
     background-color: #3695D8  !important;
     border-top: 1px solid #3695D8 !important;
-  border-bottom: 1px solid #3695D8 !important;
+    border-bottom: 1px solid #3695D8 !important;
 
 }
+
+.irs-single {
+  color: #3695D8  !important;
+
+}
+
+
 
 .irs-to, .irs-from {
     color: #3695D8  !important;
