@@ -90,7 +90,8 @@ server <- function(input, output, session) {
   })
 
   sel_country <- reactive({
-    unique(data$country)
+   unique(c("All", data$country)) |>
+             setdiff("NA")
   })
 
   sel_atc <- reactive({
@@ -103,7 +104,7 @@ server <- function(input, output, session) {
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
     if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10,
-                                                  min=1, max= sel_slide_opts_max(), value=c(1,10)) |>
+                                                  min=1, max= sel_slide_opts_max(), value=c(0,10)) |>
                                                   # shinyInput_label_embed(
                                                   #   shiny_iconlink("info") %>%
                                                   #     bs_embed_popover(
@@ -140,6 +141,13 @@ server <- function(input, output, session) {
     })
 
 
+    observe({
+      if ("All" %in% input$country) {
+        updateSelectizeInput(session, inputId = "country", selected = "All")
+      }
+
+    })
+
 
 ####### Generación Parmensan
 
@@ -162,6 +170,8 @@ server <- function(input, output, session) {
     ###print(actual_but)
     # req(parmesan_input())
     ls= parmesan_input()
+    print("Parmesan")
+    print(ls)
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
     #TODO hacer en preprocces
     df$unit_price <- as.numeric(df$unit_price)

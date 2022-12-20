@@ -4,7 +4,7 @@
 #' @export
 filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
-
+  #Descarta parametros NULL y All al momento de filtrar
   # list_params=list(id_country = NULL, id_anio=2010)
   # length(list_params)
   # names(list_params[1])
@@ -13,11 +13,16 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   list_params= list_params[-4]
   for(i in 1:length(list_params)) {
     if(!is.null(names(list_params[i]))){
-        if(!is.null(list_params[[ i ]])) {
-          df$temp <-  df[[names(list_params[i])]]
-          if(names(list_params[i])!=seq_var)  df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
-          else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
-        }
+       if(!is.null(list_params[[ i ]])) {
+            df$temp <-  df[[names(list_params[i])]]
+            if(names(list_params[i])!=seq_var) {
+
+              if(list_params[[ i ]] != "All")   df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+
+            }
+            else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
+          }
+
      }
   }
   ##print("Outlopp")
