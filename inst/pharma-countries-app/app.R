@@ -141,7 +141,6 @@ server <- function(input, output, session) {
 
     })
 
-
     observe({
       if ("All" %in% input$country) {
         updateSelectizeInput(session, inputId = "country", selected = "All")
@@ -169,8 +168,9 @@ server <- function(input, output, session) {
   data_down <-reactive({
     tryCatch({
 
-    # req(parmesan_input())
+    req(parmesan_input())
     ls= parmesan_input()
+
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
     #TODO hacer en preprocces
     df$unit_price <- as.numeric(df$unit_price)
@@ -189,6 +189,8 @@ server <- function(input, output, session) {
     if (actual_but$active == "table") return()
     req(data_down())
     ls= parmesan_input()
+    print("ls")
+    print(ls)
 
     if(actual_but$active == "map" | actual_but$active=="treemap") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "country")
@@ -353,9 +355,12 @@ server <- function(input, output, session) {
 
       req(actual_but$active)
       viz <- actual_but$active
+      print(data_viz())
+
       if (viz %in% c("map")) {
 
         if(all(is.na(data_viz()$mean))) return("No information available")
+
 
         shinycustomloader::withLoader(
           leaflet::leafletOutput("lflt_viz", height = 600),

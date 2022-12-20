@@ -17,7 +17,8 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
             df$temp <-  df[[names(list_params[i])]]
             if(names(list_params[i])!=seq_var) {
 
-              if(list_params[[ i ]] != "All")   df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+               if(list_params[[ i ]][1] != "All")
+                df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
 
             }
             else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
