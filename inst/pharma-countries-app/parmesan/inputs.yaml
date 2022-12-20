@@ -9,6 +9,7 @@ tender_year:
     value: sel_date_mean_opts()
     sep: ""
     width: '5px'
+    step: 1
 
 country:
   show: true
