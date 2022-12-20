@@ -204,14 +204,14 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       else {
         a= stringi::stri_trim(da[j,i])
         if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
-        v <- append(v,paste("<div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
-                            stringi::stri_trim(colnames(da[i])),"</div></B>","<div><p>|",a,"</p></div></div>", sep=""))
+        v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex;'> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+                            stringi::stri_trim(colnames(da[i])),"</div>","<div><p>: ",a,"</p></div></div>", sep=""))
 
       }
     }
     list_temp <- paste(v, "</BR>",collapse = " ")
-    list_temp <- paste(list_temp,gen_html_detail_to_modal(paste("m",j, sep=""),list_temp))
-    list_temp2 <- paste(list_temp2,list_temp, "</BR> </BR>")
+    # list_temp <- paste(list_temp,gen_html_detail_to_modal(paste("m",j, sep=""),list_temp))
+    list_temp2 <- paste(list_temp2,"<div class='bloque_html_det'>",list_temp, "</div></BR> </BR>")
   }
   list_temp2 <- shiny::HTML(list_temp2)
 

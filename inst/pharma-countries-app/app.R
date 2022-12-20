@@ -330,7 +330,8 @@ server <- function(input, output, session) {
   output$lflt_viz <- leaflet::renderLeaflet({
     req(actual_but$active)
     if (!actual_but$active %in% c("map")) return()
-    viz_down()
+    viz_down()  |>
+      leaflet::setView(lng = 0, lat = -5, 1.25)
   })
 
   output$dt_viz <- DT::renderDataTable({

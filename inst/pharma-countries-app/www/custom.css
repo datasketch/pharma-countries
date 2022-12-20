@@ -14,6 +14,17 @@ display: flex !important;
 flex-direction: column !important;
 }
 
+.bloque_html_det{
+  border-left: 1px solid #3695D8;
+  padding-left: 3%;
+  font-family: inherit;
+}
+
+.bloque_html_det-line{
+ font: normal !important;
+}
+
+
 .button-modal-det{
   color: #e73247;
   border: 1px solid var(--unnamed-color-e73247);
@@ -233,7 +244,7 @@ flex-direction: column !important;
 
 .shiny-options-group {
   display: flex !important;
-  gap: 20px !important;
+  gap: 0px !important;
 }
 
 .form-group {
