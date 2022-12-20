@@ -47,7 +47,7 @@ InsId_rb:
       - tender_value_amount
       Unit price:
       - unit_price
-
+  inline: FALSE
 
 
 

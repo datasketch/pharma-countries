@@ -6,7 +6,12 @@
 .text-chardonnay,.text-malibu {
   letter-spacing: 0.8px;
   color: #3695D8;
-  text-transform: capitalize
+  text-transform: capitalize;
+}
+
+.shiny-options-group{
+display: flex !important;
+flex-direction: column !important;
 }
 
 .button-modal-det{
