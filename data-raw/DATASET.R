@@ -16,6 +16,7 @@ data$country[data$country == "CL"] <- "CHILE"
 data$country[data$country == "KZ"] <- "KAZAKHSTAN"
 data$country[data$country == "AM"] <- "ARMENIA"
 data$country[data$country == "RU"] <- "RUSSIA"
+data$country <- stringr::str_to_title(data$country)
 usethis::use_data(data, overwrite = TRUE)
 sample_data=NULL
 sample_data <- data %>%

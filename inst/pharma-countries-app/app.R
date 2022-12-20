@@ -50,12 +50,13 @@ ui <- panelsPage(
           )
         ),
         footer =  div(class = "footer-logos",
+
+                      img(src= 'img/logos/logo_ins.svg',
+                          width = 150, height = 150),
                       tags$a(
                         href="https://www.datasketch.co", target="blank",
                         img(src= 'img/logos/logo_ds.svg',
-                            align = "left", width = 130, height = 70)),
-                      img(src= 'img/logos/logo_ins.svg',
-                          width = 150, height = 150)
+                            align = "left", width = 130, height = 70))
         )
   )
 )
