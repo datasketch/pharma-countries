@@ -29,14 +29,18 @@ display: flex !important;
 flex-direction: column !important;
 }
 
-.bloque_html_det{
+.bloque_html_det-line{
   border-left: 1px solid #3695D8;
   padding-left: 3%;
-  font-family: inherit;
+  font-family: 'Roboto', sans-serif;
+ font-size: 12px !important;
+
 }
 
 .bloque_html_det-line{
  font: normal !important;
+ font-family: 'Roboto', sans-serif;
+ font-size: 12px !important;
 }
 
 

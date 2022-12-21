@@ -205,8 +205,8 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       else {
         a= stringi::stri_trim(da[j,i])
         if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
-        v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex;'> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
-                            stringi::stri_trim(colnames(da[i])),"</div>","<div><p>: ",a,"</p></div></div>", sep=""))
+        v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex; overflow-inline: auto;'> <div style='color:#3695D8 !important;'>
+                            ",paste(stringi::stri_trim(colnames(da[i])),":", "&nbsp;",sep=""),"</div>","<div><p> ",a,"</p></div></div>", sep=""))
 
       }
     }
