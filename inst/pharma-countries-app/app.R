@@ -435,6 +435,11 @@ server <- function(input, output, session) {
   })
 
   output$click_info  <- renderUI({
+    req(data_down())
+    req(data_viz())
+
+    if(all(is.na(data_viz()$mean))) return("No information available")
+
 
     tx <- HTML("<div class = 'click'>
                 <img src='img/click/click.svg' class = 'click-img'/><br/>
@@ -442,7 +447,7 @@ server <- function(input, output, session) {
 
 
 
-    req(data_down())
+
 
 
 
