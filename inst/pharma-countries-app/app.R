@@ -171,7 +171,7 @@ server <- function(input, output, session) {
   tryCatch({
 
     req(parmesan_input())
-    ls= parmesan_input()
+    ls <- parmesan_input()
     click_viz$id <- NULL
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
     #TODO hacer en preprocces
@@ -491,6 +491,7 @@ server <- function(input, output, session) {
 
   data_side <- reactive({
     req(data_down())
+    if (nrow(data_down()) == 0) return()
     req(actual_but$active)
     tx <- NULL
     if (actual_but$active == "map") {
