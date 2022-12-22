@@ -326,4 +326,17 @@ flex-direction: column !important;
   opacity: 1;
 }
 
+table.dataTable.stripe>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>* {
+    box-shadow: none;
+}
+table.dataTable thead th, table.dataTable thead td {
+    padding: 0px !important;
+    border-bottom: none !important;
+}
+table.dataTable.no-footer {
+    border-bottom: none !important;
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 0px 0px;
+}
 

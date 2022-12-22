@@ -43,7 +43,7 @@ ui <- panelsPage(
         can_collapse = TRUE,
         width = 300,
         color = "chardonnay",
-        body =  div(style="overflow: scroll;max-height: 760px;",
+        body =  div(style="overflow: auto;",
           shinycustomloader::withLoader(
             uiOutput("viz_view_side"),
             type = "html", loader = "loader4"
