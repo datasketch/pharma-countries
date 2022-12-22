@@ -7,6 +7,7 @@ library(dsmodules)
 library(parmesan)
 library(webshot2)
 library(DT)
+library(reactable)
 library(pharma.countries)
 library(shinypanels)
 library(bsplus)
@@ -358,22 +359,24 @@ server <- function(input, output, session) {
       leaflet::setView(lng = 0, lat = -5, 1.25)
   })
 
-  output$dt_viz <- DT::renderDataTable({
+  output$dt_viz <- reactable::renderReactable({
     req(actual_but$active)
     if (actual_but$active != "table") return()
     req(data_down())
     df <- data_down()
-    dtable <- DT::datatable(df,
-                            rownames = F,
-                            selection = 'none',
-                            options = list(
-                              scrollX = T,
-                              fixedColumns = TRUE,
-                              fixedHeader = TRUE,
-                              scrollY = "500px"
-                            ))
-
-    dtable
+    reactable(df,
+              showSortIcon = TRUE)
+    # dtable <- DT::datatable(df,
+    #                         rownames = F,
+    #                         selection = 'none',
+    #                         options = list(
+    #                           scrollX = T,
+    #                           fixedColumns = TRUE,
+    #                           fixedHeader = TRUE,
+    #                           scrollY = "500px"
+    #                         ))
+    #
+    # dtable
   })
 
 
@@ -395,7 +398,7 @@ server <- function(input, output, session) {
         )
       } else if (viz == "table") {
         shinycustomloader::withLoader(
-          DT::dataTableOutput("dt_viz", height = 600, width = 600 ),
+          reactable::reactableOutput("dt_viz"),
           type = "html", loader = "loader4"
         )
       } else {
@@ -546,9 +549,9 @@ server <- function(input, output, session) {
   output$dt_viz_side <- DT::renderDataTable({
    req(data_side())
 
-     tx=data_side()
+     tx <- data_side()
 
-      colnames(tx) <- c("")
+    colnames(tx) <- c("")
 
      dtable <- DT::datatable(tx,
                             rownames = F,
@@ -557,13 +560,13 @@ server <- function(input, output, session) {
                             escape = FALSE,
                             height = 690,
                             options = list(
-                              pageLength = 3,
+                              pageLength = 10,
                               dom = '<>t<"bottom"p>',
                               scrollCollapse = T,
                               fixedColumns = TRUE,
                               fixedHeader = TRUE,
-                              paging = TRUE,
-                              lengthPage = 2
+                              paging = TRUE#,
+                              #lengthPage = 2
 
                             ))
 
