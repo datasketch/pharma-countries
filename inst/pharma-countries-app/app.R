@@ -46,7 +46,7 @@ ui <- panelsPage(
         body =  div(style="overflow: auto;",
           shinycustomloader::withLoader(
             uiOutput("viz_view_side"),
-            type = "html", loader = "loader4"
+            type = "html", loader = "loader4",
           )
         ),
         footer =  div(class = "footer-logos",
@@ -481,10 +481,10 @@ server <- function(input, output, session) {
     if(is.null(data_side())) return(tx)
     if(all(is.na(data_viz()$mean))) return("No information available")
 
-      shinycustomloader::withLoader(
-        DT::dataTableOutput("dt_viz_side", height = 590, width = 230 ),
-        type = "html", loader = "loader4"
-      )
+      #shinycustomloader::withLoader(
+        DT::dataTableOutput("dt_viz_side", height = 590, width = 230 )#,
+       # type = "html", loader = "loader4"
+      #)
 
 
   })
