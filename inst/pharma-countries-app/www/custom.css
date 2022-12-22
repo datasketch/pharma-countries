@@ -29,20 +29,23 @@ display: flex !important;
 flex-direction: column !important;
 }
 
-.bloque_html_det-line{
-  border-left: 1px solid #3695D8;
+.bloque_html_det-line-block{
+  border-left: 1px solid #3695D8 !important;
   padding-left: 3%;
   font-family: 'Roboto', sans-serif;
- font-size: 12px !important;
-
 }
 
 .bloque_html_det-line{
  font: normal !important;
  font-family: 'Roboto', sans-serif;
  font-size: 12px !important;
+ margin-bottom:10px;
+
 }
 
+.bloque_html_det-line-head{
+  margin-bottom:10px;
+}
 
 .button-modal-det{
   color: #e73247;

@@ -43,9 +43,9 @@ ui <- panelsPage(
         can_collapse = TRUE,
         width = 300,
         color = "chardonnay",
-        body =  div(style="overflow: scroll;max-height: 620px",
+        body =  div(style="overflow: scroll;max-height: 620px;",
           shinycustomloader::withLoader(
-            uiOutput("click_info"),
+            uiOutput("viz_view_side"),
             type = "html", loader = "loader4"
           )
         ),
@@ -68,8 +68,10 @@ server <- function(input, output, session) {
     if (is.null(input$viz_selection)) return()
      viz_rec <- c("map", "line", "bar", "treemap", "table")
 
+
     if (input$viz_selection %in% viz_rec) {
       actual_but$active <- input$viz_selection
+      click_viz$id <- NULL
     } else {
       actual_but$active <- viz_rec[1]
     }
@@ -166,11 +168,11 @@ server <- function(input, output, session) {
 
    ############################## Data required
   data_down <-reactive({
-    tryCatch({
+  tryCatch({
 
     req(parmesan_input())
     ls= parmesan_input()
-
+    click_viz$id <- NULL
     df <- data |> dplyr::select(contractsignaturedate, country, ATC.product_name, tender_value_amount, unit_price, tender_title, tender_year)
     #TODO hacer en preprocces
     df$unit_price <- as.numeric(df$unit_price)
@@ -188,9 +190,8 @@ server <- function(input, output, session) {
     req(actual_but$active)
     if (actual_but$active == "table") return()
     req(data_down())
+    req( parmesan_input())
     ls= parmesan_input()
-    print("ls")
-    print(ls)
 
     if(actual_but$active == "map" | actual_but$active=="treemap") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "country")
@@ -206,7 +207,7 @@ server <- function(input, output, session) {
     if(actual_but$active == "line") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "tender_year", "country")
     }
-     # if(all(is.na(df$mean))) df <- NULL
+
     df
   })
 
@@ -244,6 +245,32 @@ server <- function(input, output, session) {
 
 
 
+  click_viz <- reactiveValues(id = NULL)
+
+  observeEvent(input$lflt_viz_shape_click, {
+    if (is.null(data_viz())) return()
+
+    if (!is.null(input$lflt_viz_shape_click$id)) {
+       click_viz$id <- input$lflt_viz_shape_click$id
+    }
+    else {   click_viz$id <- NULL }
+
+  })
+
+
+  observeEvent(input$hcClicked, {
+    if (is.null(data_viz())) return()
+
+    if (!is.null(input$hcClicked$id)) {
+      click_viz$id <- input$hcClicked$id
+    }
+    else {   click_viz$id <- NULL }
+
+  })
+
+
+
+
   viz_opts <- reactive({
     tryCatch({
         req(data_viz())
@@ -256,7 +283,6 @@ server <- function(input, output, session) {
         if (actual_but$active %in% c("line")) {
           myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
         }
-
 
 
       opts <- list(
@@ -315,6 +341,7 @@ server <- function(input, output, session) {
   ############################### Render
   output$hgch_viz <- highcharter::renderHighchart({
     tryCatch({
+        req(data_viz())
         req(actual_but$active)
         if (actual_but$active %in% c("table", "map")) return()
         viz_down()
@@ -355,10 +382,10 @@ server <- function(input, output, session) {
 
       req(actual_but$active)
       viz <- actual_but$active
-      print(data_viz())
+
 
       if (viz %in% c("map")) {
-
+        req(data_viz())
         if(all(is.na(data_viz()$mean))) return("No information available")
 
 
@@ -372,6 +399,8 @@ server <- function(input, output, session) {
           type = "html", loader = "loader4"
         )
       } else {
+         req(data_viz())
+
         if(all(is.na(data_viz()$mean))) return("No information available")
 
         #shinycustomloader::withLoader(
@@ -434,68 +463,113 @@ server <- function(input, output, session) {
                                    file_prefix = "plot")
   })
 
-  output$click_info  <- renderUI({
-    req(data_down())
-    req(data_viz())
 
-    if(all(is.na(data_viz()$mean))) return("No information available")
 
+
+
+
+  ##############################
+  #Demo otuput side with DT
+
+  output$viz_view_side <- renderUI({
 
     tx <- HTML("<div class = 'click'>
                 <img src='img/click/click.svg' class = 'click-img'/><br/>
                 <b>Click</b> on the visualization to see more information.")
 
+    # req(data_viz())
+    if(is.null(data_side())) return(tx)
+    if(all(is.na(data_viz()$mean))) return("No information available")
+
+      shinycustomloader::withLoader(
+        DT::dataTableOutput("dt_viz_side", height = 450, width = 230 ),
+        type = "html", loader = "loader4"
+      )
 
 
+  })
 
-
-
-
+  data_side <- reactive({
+    req(data_down())
     req(actual_but$active)
+    tx <- NULL
+    if (actual_but$active == "map") {
+      if(is.null(click_viz$id)) { return() }
 
-     if (actual_but$active == "map") {
-       if(is.null(input$lflt_viz_shape_click$id)) return(tx)
-          dt <- list("country" =input$lflt_viz_shape_click$id)
-          df_filtered <- filtering_list(data_down(),dt)
+      dt <- list("country" = click_viz$id)
+      df_filtered <- filtering_list(data_down(),dt)
 
-          df_filtered <- df_filtered |> head(1000)
-          tx <- creating_detail_data(df_filtered , input$lflt_viz_shape_click$id, actual_but$active)
+      # df_filtered <- df_filtered |> head(100)
+      tx <- creating_detail_data(df_filtered , click_viz$id, actual_but$active)
 
-          tx
+      # print(tx)
+
     }
     if (actual_but$active == "line") {
-      if(is.null(input$hcClicked$id)) return(tx)
+      if(is.null(click_viz$id)) return(NULL)
 
-          dt <- list("tender_year"=input$hcClicked$id)
-          df_filtered <- filtering_list(data_down(),dt)
-          df_filtered <- df_filtered |> head(1000)
-          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-          tx
+      dt <- list("tender_year"= click_viz$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      # df_filtered <- df_filtered |> head(1000)
+      tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
+
     }
 
     if (actual_but$active == "bar") {
-      if(is.null(input$hcClicked$id)) return(tx)
-          dt <- list("ATC.product_name"=input$hcClicked$id)
-          df_filtered <- filtering_list(data_down(),dt)
-          df_filtered <- df_filtered |> head(1000)
-          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-          tx
+      if(is.null( click_viz$id)) return(NULL)
+      dt <- list("ATC.product_name"= click_viz$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      # df_filtered <- df_filtered |> head(1000)
+      tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
+
     }
 
     if (actual_but$active == "treemap") {
 
-      if(is.null(input$hcClicked$id)) return(tx)
-          dt <- list("country"=input$hcClicked$id)
-          df_filtered <- filtering_list(data_down(),dt)
-          df_filtered <- df_filtered |> head(1000)
-          tx <- creating_detail_data(df_filtered , input$hcClicked$id, actual_but$active)
-          tx
+      if(is.null( click_viz$id)) return(NULL)
+      dt <- list("country"= click_viz$id)
+      df_filtered <- filtering_list(data_down(),dt)
+      # df_filtered <- df_filtered |> head(1000)
+      tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
+
     }
-    # print(tx)
-    if(tx == "" | is.null(tx))
-      tx ="No information available"
+    if(!is.null(tx)) { if(nrow(tx)==0)
+      tx = NULL
+    }
+    # print(tx |> head(1))
     tx
+
+
   })
+
+  output$dt_viz_side <- DT::renderDataTable({
+   req(data_side())
+
+     tx=data_side()
+
+      colnames(tx) <- c("")
+
+     dtable <- DT::datatable(tx,
+                            rownames = F,
+                            class="stripe hover",
+                            selection = 'none',
+                            escape = FALSE,
+                            height = 490,
+                            options = list(
+                              pageLength = 2,
+                              dom = '<>t<"bottom"p>',
+                              scrollCollapse = T,
+                              fixedColumns = TRUE,
+                              fixedHeader = TRUE,
+                              paging = TRUE,
+                              lengthPage = 2
+
+                            ))
+
+    dtable
+  })
+
+
 
 
 }

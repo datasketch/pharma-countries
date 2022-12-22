@@ -26,7 +26,7 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
 
      }
   }
-  ##print("Outlopp")
+  ###print("Outlopp")
   df
 
 }
@@ -168,7 +168,7 @@ gen_html_detail_to_modal <- function(id,list_block,...) {
 #  var_test = "<p>Some text in the Modal..</p>"
 #  id="Uk paper"
 # #
-# ##print(gen_html_detail_to_modal(id,var_test) )
+# ###print(gen_html_detail_to_modal(id,var_test) )
 #
 
 
@@ -195,8 +195,8 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
     for(i in 1:ncol(da)) {
       if(colnames(da[i]) == tittle_paraph ) {
         title=da[j,i]
-        v <- append(v,paste0("<div style='display: inline-flex; color:black !important;'><B>",da[j,i],"</B></div>"))
-
+        v <- append(v,paste0("<div class='bloque_html_det-line-head' style='display: inline-flex; color:black !important;'><B>",da[j,i],"</B></div></BR>"))
+        v <- append(v,paste0("<div class='bloque_html_det-line-block'>","",sep=""))
       }
       # if(colnames(da[i])==modal_col_show ) {  # Esta sección llamará al modal
       #   v <- append(v,paste0("<B>",colnames(da[i]),"</B>",": ", to_modal_link(da[j,i])))
@@ -205,16 +205,23 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
       else {
         a= stringi::stri_trim(da[j,i])
         if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
-        v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex; overflow-inline: auto;'> <div style='color:#3695D8 !important;'>
-                            ",paste(stringi::stri_trim(colnames(da[i])),":", "&nbsp;",sep=""),"</div>","<div><p> ",a,"</p></div></div>", sep=""))
 
+        v <- append(v,paste("<div class='bloque_html_det-line' style='display: flex;'> <div style='color:#3695D8 !important;'>
+                             ",paste(stringi::stri_trim(colnames(da[i])),":", "&nbsp;",sep=""),"</div>","<div><p> ",a,"</p></div></div>", sep=""))
+         # v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex;'> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+         #                    stringi::stri_trim(colnames(da[i])),"</div>","<div><p>: ",a,"</p></div></div>", sep=""))
+
+         # v <- append(v,paste("<div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+         #                     stringi::stri_trim(colnames(da[i])),"</div></B>","<div><p>|",a,"</p></div></div>", sep=""))
       }
     }
-    list_temp <- paste(v, "</BR>",collapse = " ")
+    list_temp <- paste(v, "",collapse = " ")
     # list_temp <- paste(list_temp,gen_html_detail_to_modal(paste("m",j, sep=""),list_temp))
-    list_temp2 <- paste(list_temp2,"<div class='bloque_html_det'>",list_temp, "</div></BR> </BR>")
+    list_temp2 <- paste(list_temp2,"<div class='bloque_html_det'>",list_temp, "</div></div></BR> </BR>")
   }
+
   list_temp2 <- shiny::HTML(list_temp2)
+
 
 }
 
@@ -228,25 +235,25 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
   if(type_viz=="map") { #Pendiente si la colunmna se llamará country
     eval <- list(country=clickId)
     df_filtered <- filtering_list(df,eval)
-    html_detail <- gen_html_detail(df, parameters_col)
+    html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="line") { #Pendiente si la colunmna se llamará tender_year
     eval <- list(tender_year=clickId)
     df_filtered <- filtering_list(df,eval)
-    html_detail <- gen_html_detail(df, parameters_col)
+    html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="bar") { #Pendiente si la colunmna se llamará ATC.product_nam
     eval <- list(ATC.product_name=clickId)
     df_filtered <- filtering_list(df,eval)
-    html_detail <- gen_html_detail(df, parameters_col)
+    html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="treemap") { #Pendiente si la colunmna se llamará country
     eval <- list(country=clickId)
     df_filtered <- filtering_list(df,eval)
-    html_detail <- gen_html_detail(df, parameters_col)
+    html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   html_detail
@@ -255,8 +262,8 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
 #' @import dplyr
 #' @export
 counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
-  ######print(colname_group1)
-  ######print(names(df))
+  #######print(colname_group1)
+  #######print(names(df))
   if(is.null(colname_group2)){
     df <- df %>% group_by(across(all_of(colname_group1))) %>% summarize(count =n())
   }else{
@@ -268,4 +275,60 @@ counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
 
   df
 }
+
+
+
+#' @import dplyr
+#' @import shiny
+#' @export
+gen_html_detail_df <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
+  # da=get_data_api("request")
+  # param="Request..doc."
+  if(is.null(parameters_col)) parameters_col <- c("tender_title","country","tender_value_amount","unit_price","ATC.product_name")
+  if(is.null(colnames_show)) colnames_show <- c("tender_title","Country","Tender amount","Unit Price","ATC product_name")
+  if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
+  if(is.null(tittle_paraph)) tittle_paraph <- "tender_title"
+  da <- dplyr::select(df,one_of(parameters_col))
+  colnames(da) <- colnames_show
+  v <- vector()
+  list_temp2 <- ""
+  df <- data.frame()
+  for(j in 1:nrow(da)) {
+    v <- NULL
+    title=""
+    for(i in 1:ncol(da)) {
+      if(colnames(da[i]) == tittle_paraph ) {
+        title=da[j,i]
+        v <- append(v,paste0("<div class='bloque_html_det-line-head' style='display: inline-flex; color:black !important;'><B>",da[j,i],"</B></div></BR>"))
+        v <- append(v,paste0("<div class='bloque_html_det-line-block'>","",sep=""))
+      }
+      # if(colnames(da[i])==modal_col_show ) {  # Esta sección llamará al modal
+      #   v <- append(v,paste0("<B>",colnames(da[i]),"</B>",": ", to_modal_link(da[j,i])))
+      #
+      # }
+      else {
+        a= stringi::stri_trim(da[j,i])
+        if(is.numeric(da[j,i])) a = format(round(as.numeric(da[j,i]), 1), big.mark=",",big.interval=3)
+
+        v <- append(v,paste("<div class='bloque_html_det-line' style='display: flex;'> <div style='color:#3695D8 !important;'>
+                             ",paste(stringi::stri_trim(colnames(da[i])),":", "&nbsp;",sep=""),"</div>","<div><p> ",a,"</p></div></div>", sep=""))
+        # v <- append(v,paste("<div class='bloque_html_det-line' style='display: inline-flex;'> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+        #                    stringi::stri_trim(colnames(da[i])),"</div>","<div><p>: ",a,"</p></div></div>", sep=""))
+
+        # v <- append(v,paste("<div style='display: inline-flex;'><B> <div style='color:#3695D8 !important;'>&nbsp;&nbsp;",
+        #                     stringi::stri_trim(colnames(da[i])),"</div></B>","<div><p>|",a,"</p></div></div>", sep=""))
+      }
+    }
+    list_temp <- paste(v, "",collapse = " ")
+    list_temp2  <- NULL
+    # list_temp <- paste(list_temp,gen_html_detail_to_modal(paste("m",j, sep=""),list_temp))
+    list_temp2 <- paste("<div class='bloque_html_det'>",list_temp, "</div></div></BR> </BR>")
+    df[nrow(df) + 1, "det"] <- list_temp2
+  }
+
+  df
+
+
+}
+
 
