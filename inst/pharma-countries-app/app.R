@@ -43,7 +43,7 @@ ui <- panelsPage(
         can_collapse = TRUE,
         width = 300,
         color = "chardonnay",
-        body =  div(style="overflow: scroll;max-height: 620px;",
+        body =  div(style="overflow: scroll;max-height: 760px;",
           shinycustomloader::withLoader(
             uiOutput("viz_view_side"),
             type = "html", loader = "loader4"
@@ -482,7 +482,7 @@ server <- function(input, output, session) {
     if(all(is.na(data_viz()$mean))) return("No information available")
 
       shinycustomloader::withLoader(
-        DT::dataTableOutput("dt_viz_side", height = 450, width = 230 ),
+        DT::dataTableOutput("dt_viz_side", height = 590, width = 230 ),
         type = "html", loader = "loader4"
       )
 
@@ -554,9 +554,9 @@ server <- function(input, output, session) {
                             class="stripe hover",
                             selection = 'none',
                             escape = FALSE,
-                            height = 490,
+                            height = 690,
                             options = list(
-                              pageLength = 2,
+                              pageLength = 3,
                               dom = '<>t<"bottom"p>',
                               scrollCollapse = T,
                               fixedColumns = TRUE,
