@@ -304,7 +304,8 @@ server <- function(input, output, session) {
         border_weight = 0.3
       )
       if (actual_but$active == "map") {
-
+        opts$legend_title <- stringr::str_to_sentence(input$InsId_rb)
+        opts$legend_color <-  "Black"
         opts$map_bins <- 3
         opts$map_color_scale = "Bins"
         opts$na_color <- "transparent"
