@@ -41,12 +41,15 @@ Drug Name:
 InsId_rb:
   show: true
   input_type: radioButtons
+  input_info:
+    icon: info-circle
+    text: “'Tender amount' refers to the total value of the awarded tender, whilst 'unit price' refers to the price paid per item in the awarded tender”
   input_params:
-    label: "Number value"
+    label: "Number value (usd)"
     choices:
-      Tender amount (usd):
+      Tender amount:
       - Tender Value Amount (usd)
-      Unit price (usd):
+      Unit price:
       - Unit Price (usd)
   inline: FALSE
 

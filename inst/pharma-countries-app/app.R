@@ -446,12 +446,12 @@ server <- function(input, output, session) {
                                  dropdownLabel ="Download",
                                  formats = c("jpeg", "pdf", "png", "html"),
                                  display = "dropdown",
-                                 text = "Descargar")
+                                 text = "Download")
     } else {
       dsmodules::downloadTableUI("dropdown_table",
                                  dropdownLabel = "Download",
                                  formats = c("csv", "xlsx", "json"),
-                                 display = "dropdown", text = "Descargar")
+                                 display = "dropdown", text = "Download")
     }
   })
 
