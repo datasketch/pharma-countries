@@ -47,10 +47,10 @@ InsId_rb:
   input_params:
     label: "Number value (usd)"
     choices:
-      Tender amount:
-      - Tender Value Amount (usd)
       Unit price:
       - Unit Price (usd)
+      Tender amount:
+      - Tender Value Amount (usd)
   inline: FALSE
 
 
