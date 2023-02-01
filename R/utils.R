@@ -5,28 +5,36 @@
 filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
   #Descarta parametros NULL y All al momento de filtrar
-  # list_params=list(id_country = NULL, id_anio=2010)
+  # list_params=list(id_Country = NULL, id_anio=2010)
   # length(list_params)
   # names(list_params[1])
   if(is.null(seq_var)) seq_var=""
 
   list_params= list_params[-4]
+
   for(i in 1:length(list_params)) {
+
     if(!is.null(names(list_params[i]))){
+
        if(!is.null(list_params[[ i ]])) {
-            df$temp <-  df[[names(list_params[i])]]
+
+            df$temp <-  stringr::str_remove(df[[names(list_params[i])]],"`")
+
             if(names(list_params[i])!=seq_var) {
 
-               if(list_params[[ i ]][1] != "All")
-                df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+               if(list_params[[ i ]][1] != "All") {
 
+                df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+               }
             }
-            else  df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
+            else{
+              df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
+            }
           }
 
      }
   }
-  ###print("Outlopp")
+
   df
 
 }
@@ -49,8 +57,8 @@ meaning_r <- function(df,colname_group1,mean_variable="",colname_group2=NULL) {
   df
 }
 
-#meaning_r(data,,colname_group1="country",mean_variable="tender_value_amount")
-#a=filter_list(data,list(tender_value_currency="KZT", tender_year=2016))
+#meaning_r(data,,colname_group1="Country",mean_variable="Tender Value Amount (usd)")
+#a=filter_list(data,list(tender_value_currency="KZT", `Tender Year`=2016))
 
 #' @import dplyr
 #' @export
@@ -180,10 +188,10 @@ gen_html_detail_to_modal <- function(id,list_block,...) {
 gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("tender_title","country","tender_value_amount","unit_price","ATC.product_name")
-  if(is.null(colnames_show)) colnames_show <- c("tender_title","Country","Tender amount","Unit Price","ATC product_name")
+  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
+  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
-  if(is.null(tittle_paraph)) tittle_paraph <- "tender_title"
+  if(is.null(tittle_paraph)) tittle_paraph <- "Tender Title"
   da <- dplyr::select(df,one_of(parameters_col))
   colnames(da) <- colnames_show
   v <- vector()
@@ -232,26 +240,26 @@ gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_c
 #' @export
 creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,selected_col=NULL, modal_col=NULL) {
   # if (is.null(clickId)) return()
-  if(type_viz=="map") { #Pendiente si la colunmna se llamará country
-    eval <- list(country=clickId)
+  if(type_viz=="map") { #Pendiente si la colunmna se llamará Country
+    eval <- list(Country=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
-  if(type_viz=="line") { #Pendiente si la colunmna se llamará tender_year
-    eval <- list(tender_year=clickId)
+  if(type_viz=="line") { #Pendiente si la colunmna se llamará `Tender Year`
+    eval <- list(`Tender Year`=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="bar") { #Pendiente si la colunmna se llamará ATC.product_nam
-    eval <- list(ATC.product_name=clickId)
+    eval <- list( `Drug Name`=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
-  if(type_viz=="treemap") { #Pendiente si la colunmna se llamará country
-    eval <- list(country=clickId)
+  if(type_viz=="treemap") { #Pendiente si la colunmna se llamará Country
+    eval <- list(Country=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
@@ -284,10 +292,10 @@ counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
 gen_html_detail_df <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("tender_title","country","tender_value_amount","unit_price","ATC.product_name")
-  if(is.null(colnames_show)) colnames_show <- c("tender_title","Country","Tender amount","Unit Price","ATC product_name")
+  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount","Unit Price","Drug Name")
+  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount","Unit Price","Drug Name")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
-  if(is.null(tittle_paraph)) tittle_paraph <- "tender_title"
+  if(is.null(tittle_paraph)) tittle_paraph <- "Tender Title"
   da <- dplyr::select(df,one_of(parameters_col))
   colnames(da) <- colnames_show
   v <- vector()

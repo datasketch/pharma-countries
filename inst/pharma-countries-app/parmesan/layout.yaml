@@ -1,9 +1,9 @@
 filtros:
   label:
   inputs:
-    - tender_year
-    - country
-    - ATC.product_name
+    - Tender Year
+    - Country
+    - Drug Name
     - InsId_rb
 
 

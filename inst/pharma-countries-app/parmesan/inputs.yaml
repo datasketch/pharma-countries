@@ -1,5 +1,5 @@
 ---
-tender_year:
+Tender Year:
   show: true
   input_type: sliderInput
   input_params:
@@ -11,7 +11,7 @@ tender_year:
     width: '5px'
     step: 1
 
-country:
+Country:
   show: true
   input_type: selectizeInput
   input_params:
@@ -25,7 +25,7 @@ country:
       - - drag_drop
 
 
-ATC.product_name:
+Drug Name:
   show: true
   input_type: selectizeInput
   input_params:
@@ -44,10 +44,10 @@ InsId_rb:
   input_params:
     label: "Number value"
     choices:
-      Tender amount:
-      - tender_value_amount
-      Unit price:
-      - unit_price
+      Tender amount (usd):
+      - Tender Value Amount (usd)
+      Unit price (usd):
+      - Unit Price (usd)
   inline: FALSE
 
 
