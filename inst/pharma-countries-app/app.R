@@ -308,8 +308,9 @@ server <- function(input, output, session) {
         opts$map_bins <- 3
         opts$map_color_scale = "Bins"
         opts$na_color <- "transparent"
-        opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
-                                     "#ffb446", "#ffca6b", "#ffdf98"))
+        # opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
+                                     # "#ffb446", "#ffca6b", "#ffdf98"))
+        opts$palette_colors <- rev(c( "#da3592","#FFF6FF"))
       } else {
         opts$clickFunction <- htmlwidgets::JS(myFunc)
         opts$palette_colors <- "#ef4e00"
