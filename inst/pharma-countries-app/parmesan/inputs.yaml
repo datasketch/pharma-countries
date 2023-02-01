@@ -29,7 +29,7 @@ Drug Name:
   show: true
   input_type: selectizeInput
   input_params:
-    label: ATC
+    label: Drug name
     choices: sel_atc()
     multiple: true
     options:
