@@ -388,6 +388,8 @@ server <- function(input, output, session) {
           opts$marker_enabled <- FALSE
           opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
                                    "#ffeea8", "#da3592","#0000ff")
+          opts$ver_title <- "Tender Year"
+          opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
         }
       }
 
@@ -399,6 +401,9 @@ server <- function(input, output, session) {
       }
 
       if (actual_but$active == "bar") {
+        opts$ver_title <- "Drug name"
+        opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
+
         if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
       }
 
