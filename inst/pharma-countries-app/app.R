@@ -318,7 +318,7 @@ server <- function(input, output, session) {
 
 
   viz_opts <- reactive({
-    tryCatch({
+    # tryCatch({
       req(data_viz())
       req(actual_but$active)
 
@@ -352,11 +352,15 @@ server <- function(input, output, session) {
 
         }
       }
-
-
+      data_v <- data_viz()
+      print(colnames(data_v))
+      data_v <- data_v |> dplyr::rename("Average" = "mean")
+     # if(actual_but$active == "treemap") {
+     #   print( sitools::f2si(data_v$mean) )
+     # }
 
       opts <- list(
-        data = data_viz(),
+        data = data_v,
         orientation = "hor",
         ver_title = " ",
         hor_title = " ",
@@ -394,6 +398,7 @@ server <- function(input, output, session) {
       }
 
       if (actual_but$active == "treemap") {
+        opts$Labels <-  sitools::f2si(data_v$mean)
         opts$dataLabels_align <- "middle"
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
@@ -408,10 +413,10 @@ server <- function(input, output, session) {
       }
 
       opts
-    },
-    error = function(cond) {
-      return()
-    })
+    # },
+    # error = function(cond) {
+    #   return()
+    # })
   })
 
 
