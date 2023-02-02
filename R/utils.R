@@ -80,27 +80,41 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
   }
 
   if(type_viz=="bar"){
-    if(operation=="mean")  df <- meaning_r(df,group_by_viz,variable_viz)
+    if(operation=="mean"){
+      # df <- meaning_r(df, group_by_viz, variable_viz)
+    if(is.null(desagregation_viz)) df <- meaning_r(df,group_by_viz,variable_viz)
+    else
+    df <- meaning_r(df,group_by_viz,variable_viz,desagregation_viz)
+    }
   }
 
   if(type_viz=="treemap"){
     if(operation=="mean")  df <- meaning_r(df, group_by_viz, variable_viz)
   }
-
+  # print( df |> head(2))
   df
 }
 
 
 #' @import dplyr
 #' @export
-selecting_viz_typeGraph <- function(df, type_viz) {
+selecting_viz_typeGraph <- function(df, type_viz, param=NULL) {
   # Vizualizaciones requeridas:Clorepethc  Line  Bar   treemap   table, se pueden dejar en un solo if las que no necesitan desagregacion
   prex <- "YeaNum"
   if(type_viz=="map") {  prex <- "GnmNum" }
   if(type_viz=="line") {
     if(ncol(df) > 2)  prex <- "CatYeaNum"
   }
-  if(type_viz=="bar" | type_viz=="treemap" ) prex <- "CatNum"
+  if(type_viz=="bar" | type_viz=="treemap" ) {
+        prex <- "CatNum"
+
+        if(length(unique(param)) > 1){
+         if (!"All" %in% param){
+              prex <- "CatCatNum"
+         }
+        }
+
+        }
   prex
 }
 
@@ -292,8 +306,8 @@ counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
 gen_html_detail_df <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount","Unit Price","Drug Name")
-  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount","Unit Price","Drug Name")
+  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
+  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (usd)" ,"Unit Price (usd)","Drug Name")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
   if(is.null(tittle_paraph)) tittle_paraph <- "Tender Title"
   da <- dplyr::select(df,one_of(parameters_col))

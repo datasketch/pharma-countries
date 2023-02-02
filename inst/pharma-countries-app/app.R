@@ -107,15 +107,15 @@ server <- function(input, output, session) {
   output$sel_slide_opts <- renderUI({
     req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of ATC to display",list(icon("paw"),"Select a variable:"),step=10,
-                                                  min=1, max= sel_slide_opts_max(), value=c(0,10)) |>
+    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+                                                  min=1, max=sel_slide_opts_max(), value=c(0,10)) |>
       # shinyInput_label_embed(
       #   shiny_iconlink("info") %>%
       #     bs_embed_popover(
       #       title = "sel_slide_opts", content = "Choose a favorite", placement = "left"
       #     )
       # )
-
+     # sel_slide_opts_max()
       bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
 
   })
@@ -126,11 +126,30 @@ server <- function(input, output, session) {
     req(parmesan_input())
     if (actual_but$active == "bar") {
       ls <- parmesan_input()
-      df <- filtering_list(data, ls, "Tender Year")
-      df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
-      df <- df |> filter(!is.na(mean))
+      df <- filtering_list(data_down(), ls, "Tender Year")
+
+
+      if(length(unique(input$Country)) > 1){
+        if (!"All" %in% input$Country){
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+
+        }
+        else{
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+        }
+
+      }
+
+      else{
+        df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+      }
+      # df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+      df <- df |> filter(!is.na(mean) | mean==0)
+
       length(unique(df$`Drug Name`))
+
     }
+
   })
 
   output$sel_check_opt <- renderUI({
@@ -199,11 +218,38 @@ server <- function(input, output, session) {
     }
     if(actual_but$active == "bar") {
       # req(input$sel_slide_opts)
-      df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug Name")
 
-      df <- df |> filter(!is.na(mean))
-      if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
-      df <- df |> arrange(desc(mean))
+      if(length(unique(input$Country)) > 1){
+        if (!"All" %in% input$Country){
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          df <- df |> filter(!is.na(mean))
+          df <- df |> arrange(desc(mean),`Drug Name`,Country)
+          df <- df |> select(Country,`Drug Name`,mean)
+          if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+
+          # df <- df |> arrange(Country,`Drug Name`,desc(mean))
+
+
+        }
+        else{
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug Name")
+          df <- df |> filter(!is.na(mean))
+          if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+
+          df <- df |> arrange(desc(mean))
+        }
+
+
+      }
+
+       else{
+        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug Name")
+        df <- df |> filter(!is.na(mean))
+        if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+
+        df <- df |> arrange(desc(mean))
+       }
+
     }
     if(actual_but$active == "line") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Tender Year", "Country")
@@ -217,7 +263,7 @@ server <- function(input, output, session) {
   vizFrtype <- reactive({
     req(actual_but$active)
     req(data_viz())
-    selecting_viz_typeGraph(data_viz(),actual_but$active)
+    selecting_viz_typeGraph(data_viz(),actual_but$active,input$Country)
   })
 
   viz_down  <- reactive({
@@ -227,7 +273,6 @@ server <- function(input, output, session) {
     viz=""
 
     if(actual_but$active == "bar" | actual_but$active == "line" | actual_but$active == "treemap") {
-
       viz <- paste0("hgchmagic::", paste0("hgch_",actual_but$active, "_", vizFrtype()))
       library(hgchmagic)
     }
@@ -278,12 +323,36 @@ server <- function(input, output, session) {
       req(actual_but$active)
 
       myFunc <- NULL
-      if (actual_but$active %in% c("bar", "treemap")) {
-        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+
+      if(length(unique(input$Country)) > 1){
+        if (!"All" %in% input$Country){
+          if (actual_but$active %in% c( "treemap")) {
+            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+          }
+          if (actual_but$active %in% c("bar","line")) {
+            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+          }
+        }
+        else {
+            if (actual_but$active %in% c( "bar","treemap")) {
+              myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+            }
+            if (actual_but$active %in% c("line")) {
+              myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+
+            }
+        }
       }
-      if (actual_but$active %in% c("line")) {
-        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+      else {
+        if (actual_but$active %in% c( "bar","treemap")) {
+          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+        }
+        if (actual_but$active %in% c("line")) {
+          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
+
+        }
       }
+
 
 
       opts <- list(
@@ -508,7 +577,6 @@ server <- function(input, output, session) {
       # df_filtered <- df_filtered |> head(100)
       tx <- creating_detail_data(df_filtered , click_viz$id, actual_but$active)
 
-      # print(tx)
 
     }
     if (actual_but$active == "line") {
@@ -542,7 +610,7 @@ server <- function(input, output, session) {
     if(!is.null(tx)) { if(nrow(tx)==0)
       tx = NULL
     }
-    # print(tx |> head(1))
+
     tx
 
 
