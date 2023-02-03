@@ -57,6 +57,9 @@ meaning_r <- function(df,colname_group1,mean_variable="",colname_group2=NULL) {
   df
 }
 
+
+
+
 #meaning_r(data,,colname_group1="Country",mean_variable="Tender Value Amount (usd)")
 #a=filter_list(data,list(tender_value_currency="KZT", `Tender Year`=2016))
 
@@ -89,7 +92,35 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
   }
 
   if(type_viz=="treemap"){
-    if(operation=="mean")  df <- meaning_r(df, group_by_viz, variable_viz)
+    if(operation=="mean"){
+      # df <- meaning_r(df, group_by_viz, variable_viz)
+      if(is.null(desagregation_viz)){
+
+        df <- meaning_r(df,group_by_viz,variable_viz)
+
+      }
+      else{
+        df <- meaning_r(df,group_by_viz,variable_viz,desagregation_viz)
+
+        df1 <- df |> group_by(!!sym(group_by_viz))  |> slice_max(mean,n=10,with_ties = F) %>%
+          mutate(portion = "top")
+
+        df2 <- df |> anti_join(df1,df, by = c(group_by_viz, desagregation_viz))
+        # df3 <- df |> inner_join(df,df1, by = c(group_by_viz, desagregation_viz))
+        df2$portion <- "Others"
+
+        df2 <- meaning_r(df2,group_by_viz,"mean","portion")
+
+        df2 <- df2 |> rename(!!desagregation_viz := portion)
+        df1 <- df1 |> select(!portion)
+
+        df <- as.data.frame(rbind(df1,df2))
+
+
+      }
+
+    }
+
   }
   # print( df |> head(2))
   df
@@ -105,7 +136,7 @@ selecting_viz_typeGraph <- function(df, type_viz, param=NULL) {
   if(type_viz=="line") {
     if(ncol(df) > 2)  prex <- "CatYeaNum"
   }
-  if(type_viz=="bar" | type_viz=="treemap" ) {
+  if(type_viz=="bar" ) {
         prex <- "CatNum"
 
         if(length(unique(param)) > 1){
@@ -114,7 +145,8 @@ selecting_viz_typeGraph <- function(df, type_viz, param=NULL) {
          }
         }
 
-        }
+  }
+  if(type_viz=="treemap" ) {   prex <- "CatCatNum" }
   prex
 }
 

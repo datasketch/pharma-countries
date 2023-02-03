@@ -50,7 +50,8 @@ ui <- panelsPage(
                     )
         ),
         footer =  div(class = "footer-logos",
-
+                      img(src= 'img/logos/GTI_logo.png',
+                          width = 85, height = 85),
                       img(src= 'img/logos/logo_ins.svg',
                           width = 150, height = 150),
                       tags$a(
@@ -214,7 +215,8 @@ server <- function(input, output, session) {
     ls= parmesan_input()
 
     if(actual_but$active == "map" | actual_but$active=="treemap") {
-      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Country")
+      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Country", "Drug Name")
+
     }
     if(actual_but$active == "bar") {
       # req(input$sel_slide_opts)
@@ -307,10 +309,20 @@ server <- function(input, output, session) {
   observeEvent(input$hcClicked, {
     if (is.null(data_viz())) return()
 
-    if (!is.null(input$hcClicked$id)) {
-      click_viz$id <- input$hcClicked$id
-    }
-    else {   click_viz$id <- NULL }
+
+   if(actual_but$active %in% c("treemap")) {
+     if (!is.null(input$hcClicked$cat$parent)) {
+       click_viz$id <- input$hcClicked$cat$parent
+     }
+     else {   click_viz$id <- NULL }
+   }
+   else{
+      if (!is.null(input$hcClicked$id)) {
+        click_viz$id <- input$hcClicked$id
+      }
+      else {   click_viz$id <- NULL }
+   }
+
 
   })
 
@@ -318,7 +330,7 @@ server <- function(input, output, session) {
 
 
   viz_opts <- reactive({
-    # tryCatch({
+    tryCatch({
       req(data_viz())
       req(actual_but$active)
 
@@ -326,35 +338,48 @@ server <- function(input, output, session) {
 
       if(length(unique(input$Country)) > 1){
         if (!"All" %in% input$Country){
-          if (actual_but$active %in% c( "treemap")) {
-            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+          if (actual_but$active %in% c("treemap")) {
+            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+
           }
           if (actual_but$active %in% c("bar","line")) {
             myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
           }
         }
         else {
-            if (actual_but$active %in% c( "bar","treemap")) {
+            if (actual_but$active %in% c( "bar")) {
               myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
+
             }
             if (actual_but$active %in% c("line")) {
               myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
 
             }
+
+            if (actual_but$active %in% c("treemap")) {
+            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+
+             }
+
+
         }
       }
       else {
-        if (actual_but$active %in% c( "bar","treemap")) {
+        if (actual_but$active %in% c( "bar")) {
           myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {id:event.point.name, timestamp: new Date().getTime()});}")
         }
         if (actual_but$active %in% c("line")) {
           myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
 
         }
+        if (actual_but$active %in% c("treemap")) {
+          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+
+        }
       }
       data_v <- data_viz()
-      print(colnames(data_v))
-      data_v <- data_v |> dplyr::rename("Average" = "mean")
+
+      data_v <- data_v |> dplyr::rename("Average Price" = "mean")
      # if(actual_but$active == "treemap") {
      #   print( sitools::f2si(data_v$mean) )
      # }
@@ -374,7 +399,10 @@ server <- function(input, output, session) {
         cursor = "pointer",
         map_tiles = "OpenStreetMap",
         legend_position = "bottomleft",
-        border_weight = 0.3
+        border_weight = 0.3,
+        map_provider_tile = "url",
+        map_extra_layout = "https://maps.geoapify.com/v1/tile/osm-bright-smooth/{z}/{x}/{y}.png?apiKey=3ccf9d5f19894b32b502485362c99163",
+        map_name_layout = "osm-brigh"
       )
       if (actual_but$active == "map") {
         opts$legend_title <- stringr::str_to_sentence(input$InsId_rb)
@@ -398,7 +426,7 @@ server <- function(input, output, session) {
       }
 
       if (actual_but$active == "treemap") {
-        opts$Labels <-  sitools::f2si(data_v$mean)
+        # opts$Labels <-  sitools::f2si(data_v$mean)
         opts$dataLabels_align <- "middle"
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
@@ -413,10 +441,10 @@ server <- function(input, output, session) {
       }
 
       opts
-    # },
-    # error = function(cond) {
-    #   return()
-    # })
+    },
+    error = function(cond) {
+      return()
+    })
   })
 
 
@@ -467,8 +495,7 @@ server <- function(input, output, session) {
       req(actual_but$active)
       viz <- actual_but$active
 
-
-      if (viz %in% c("map")) {
+            if (viz %in% c("map")) {
         req(data_viz())
         if(all(is.na(data_viz()$mean))) return("No information available")
 
