@@ -49,7 +49,7 @@ InsId_rb:
     choices:
       Unit price:
       - Unit Price (usd)
-      Tender value amount:
+      Tender amount:
       - Tender Value Amount (usd)
   inline: FALSE
 
