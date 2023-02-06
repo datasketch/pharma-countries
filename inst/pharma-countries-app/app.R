@@ -189,7 +189,7 @@ server <- function(input, output, session) {
 
   ############################## Data required
   data_down <-reactive({
-    tryCatch({
+     tryCatch({
 
       req(parmesan_input())
       ls <- parmesan_input()
@@ -330,7 +330,7 @@ server <- function(input, output, session) {
 
 
   viz_opts <- reactive({
-    tryCatch({
+     tryCatch({
       req(data_viz())
       req(actual_but$active)
 
@@ -378,8 +378,9 @@ server <- function(input, output, session) {
         }
       }
       data_v <- data_viz()
-
+      data_v <- data_v |> dplyr::mutate(mean_show = sitools::f2si(mean))
       data_v <- data_v |> dplyr::rename("Average Price" = "mean")
+
      # if(actual_but$active == "treemap") {
      #   print( sitools::f2si(data_v$mean) )
      # }
@@ -402,7 +403,9 @@ server <- function(input, output, session) {
         border_weight = 0.3,
         map_provider_tile = "url",
         map_extra_layout = "https://maps.geoapify.com/v1/tile/osm-bright-smooth/{z}/{x}/{y}.png?apiKey=3ccf9d5f19894b32b502485362c99163",
-        map_name_layout = "osm-brigh"
+        map_name_layout = "osm-brigh",
+        ormat_sample_num = "10M",
+        format_numericSymbols = T
       )
       if (actual_but$active == "map") {
         opts$legend_title <- stringr::str_to_sentence(input$InsId_rb)
@@ -410,6 +413,7 @@ server <- function(input, output, session) {
         opts$map_bins <- 3
         opts$map_color_scale = "Bins"
         opts$na_color <- "transparent"
+        opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
         # opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
                                      # "#ffb446", "#ffca6b", "#ffdf98"))
         opts$palette_colors <- rev(c( "#da3592","#FFF6FF"))
@@ -422,6 +426,7 @@ server <- function(input, output, session) {
                                    "#ffeea8", "#da3592","#0000ff")
           opts$ver_title <- "Tender Year"
           opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
+          opts$tooltip <- "<b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} usd"
         }
       }
 
@@ -431,6 +436,7 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
+        opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
       }
 
       if (actual_but$active == "bar") {
@@ -438,6 +444,22 @@ server <- function(input, output, session) {
         opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
 
         if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
+
+        if(length(unique(input$Country)) > 1){
+          if (!"All" %in% input$Country){
+            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+
+          }
+          else{
+            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><br/><b>Average Price:</b> {mean_show} usd"
+
+          }
+
+        }
+
+        else{
+          opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><br/><b>Average Price:</b> {mean_show} usd"
+        }
       }
 
       opts
