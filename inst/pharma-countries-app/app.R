@@ -432,6 +432,8 @@ server <- function(input, output, session) {
 
       if (actual_but$active == "treemap") {
         # opts$Labels <-  sitools::f2si(data_v$mean)
+        opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                 "#ffeea8", "#da3592","#0000ff")
         opts$dataLabels_align <- "middle"
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
@@ -442,6 +444,8 @@ server <- function(input, output, session) {
       }
 
       if (actual_but$active == "bar") {
+        opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                 "#ffeea8", "#da3592","#0000ff")
         opts$ver_title <- "Drug name"
         opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
 
