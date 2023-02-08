@@ -51,13 +51,13 @@ ui <- panelsPage(
         ),
         footer =  div(class = "footer-logos",
                       img(src= 'img/logos/GTI_logo.png',
-                          width = 85, height = 85),
+                          width = 90, height = 90),
                       img(src= 'img/logos/logo_ins.svg',
-                          width = 150, height = 150),
+                          width = 160, height = 160),
                       tags$a(
                         href="https://www.datasketch.co", target="blank",
                         img(src= 'img/logos/logo_ds.svg',
-                            align = "left", width = 130, height = 70))
+                            align = "left", width = 170, height = 110))
         )
   )
 )
@@ -404,7 +404,7 @@ server <- function(input, output, session) {
         map_provider_tile = "url",
         map_extra_layout = "https://maps.geoapify.com/v1/tile/osm-bright-smooth/{z}/{x}/{y}.png?apiKey=3ccf9d5f19894b32b502485362c99163",
         map_name_layout = "osm-brigh",
-        ormat_sample_num = "10M",
+        format_sample_num = "10M",
         format_numericSymbols = T
       )
       if (actual_but$active == "map") {
@@ -436,6 +436,8 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
+        opts$format_sample_num <- "10M"
+        opts$format_numericSymbols = T
         opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
       }
 
@@ -451,7 +453,7 @@ server <- function(input, output, session) {
 
           }
           else{
-            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><br/><b>Average Price:</b> {mean_show} usd"
+            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
 
           }
 
