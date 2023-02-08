@@ -464,7 +464,7 @@ server <- function(input, output, session) {
         }
 
         else{
-          opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
         }
       }
 
