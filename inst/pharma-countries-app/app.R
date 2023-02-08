@@ -426,7 +426,7 @@ server <- function(input, output, session) {
                                    "#ffeea8", "#da3592","#0000ff")
           opts$ver_title <- "Tender Year"
           opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
-          opts$tooltip <- "<b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} usd"
         }
       }
 
