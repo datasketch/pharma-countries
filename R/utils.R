@@ -87,7 +87,9 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
       # df <- meaning_r(df, group_by_viz, variable_viz)
     if(is.null(desagregation_viz)) df <- meaning_r(df,group_by_viz,variable_viz)
     else
-    df <- meaning_r(df,group_by_viz,variable_viz,desagregation_viz)
+    {
+      df <- meaning_r(df,group_by_viz,variable_viz,desagregation_viz)
+    }
     }
   }
 

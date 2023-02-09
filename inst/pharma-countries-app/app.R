@@ -129,10 +129,14 @@ server <- function(input, output, session) {
       ls <- parmesan_input()
       df <- filtering_list(data_down(), ls, "Tender Year")
 
-
+      df$counter_c <-NULL
       if(length(unique(input$Country)) > 1){
         if (!"All" %in% input$Country){
           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          total <- length(input$Country)
+          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+                  #
 
         }
         else{
@@ -227,7 +231,16 @@ server <- function(input, output, session) {
           df <- df |> filter(!is.na(mean))
           df <- df |> arrange(desc(mean),`Drug Name`,Country)
           df <- df |> select(Country,`Drug Name`,mean)
+          total <- length(input$Country)
+          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+
+          if(nrow(df) > 0) {
+                      #
           if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+          }
+
+          else{ HTML("There are no common vaccines for the selected countries")}
 
           # df <- df |> arrange(Country,`Drug Name`,desc(mean))
 
@@ -438,8 +451,7 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
-        opts$format_sample_num <- "10M"
-        opts$format_numericSymbols = T
+
         opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
       }
 
