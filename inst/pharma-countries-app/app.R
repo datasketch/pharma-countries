@@ -63,7 +63,6 @@ ui <- panelsPage(
 )
 
 
-
 server <- function(input, output, session) {
   ###Panel izquierdo
   observe({
@@ -324,6 +323,7 @@ server <- function(input, output, session) {
 
 
    if(actual_but$active %in% c("treemap")) {
+     print(input$hcClicked)
      if (!is.null(input$hcClicked$cat$parent)) {
        click_viz$id <- input$hcClicked$cat$parent
      }
@@ -417,7 +417,7 @@ server <- function(input, output, session) {
         map_provider_tile = "url",
         map_extra_layout = "https://maps.geoapify.com/v1/tile/osm-bright-smooth/{z}/{x}/{y}.png?apiKey=3ccf9d5f19894b32b502485362c99163",
         map_name_layout = "osm-brigh",
-        format_sample_num = "10M",
+        # format_sample_num = "10M",
         format_numericSymbols = T
       )
       if (actual_but$active == "map") {
@@ -427,6 +427,7 @@ server <- function(input, output, session) {
         opts$map_color_scale = "Bins"
         opts$na_color <- "transparent"
         opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+        opts$format_sample_num = "10M"
         # opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
                                      # "#ffb446", "#ffca6b", "#ffdf98"))
         opts$palette_colors <- rev(c( "#da3592","#FFF6FF"))
@@ -439,6 +440,7 @@ server <- function(input, output, session) {
                                    "#ffeea8", "#da3592","#0000ff")
           opts$ver_title <- "Tender Year"
           opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
+          opts$format_sample_num = "10M"
           opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} usd"
         }
       }
@@ -451,7 +453,7 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
-
+        opts$datalabel_formmater_js  <- FALSE
         opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
       }
 
@@ -460,7 +462,7 @@ server <- function(input, output, session) {
                                  "#ffeea8", "#da3592","#0000ff")
         opts$ver_title <- "Drug name"
         opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
-
+        opts$format_sample_num = "10M"
         if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
 
         if(length(unique(input$Country)) > 1){
