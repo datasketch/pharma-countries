@@ -453,7 +453,7 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
-        opts$datalabel_formmater_js  <- FALSE
+        opts$datalabel_formmater_js  <- TRUE
         opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
       }
 
