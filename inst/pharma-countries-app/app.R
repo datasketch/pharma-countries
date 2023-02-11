@@ -44,7 +44,10 @@ ui <- panelsPage(
         width = 300,
         color = "chardonnay",
         body =  div(style="overflow: auto;",
+
+                    uiOutput("viz_view_side_limit"),
                     shinycustomloader::withLoader(
+
                       uiOutput("viz_view_side"),
                       type = "html", loader = "loader4",
                     )
@@ -217,8 +220,48 @@ server <- function(input, output, session) {
     req( parmesan_input())
     ls= parmesan_input()
 
-    if(actual_but$active == "map" | actual_but$active=="treemap") {
+    if(actual_but$active == "map") {
       df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Country", "Drug Name")
+
+    }
+    if(actual_but$active == "treemap") {
+      # req(input$sel_slide_opts)
+
+      if(length(unique(input$Country)) > 1){
+        if (!"All" %in% input$Country){
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug Name")
+          df <- df |> filter(!is.na(mean))
+          df <- df |> arrange(desc(mean),`Drug Name`,Country)
+          df <- df |> select(Country,`Drug Name`,mean)
+          total <- length(input$Country)
+          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df <- df |> filter(!is.na(mean))
+          if(nrow(df) < 0) {
+            #
+             HTML("There are no common vaccines for the selected countries")
+          }
+
+
+
+          # df <- df |> arrange(Country,`Drug Name`,desc(mean))
+
+
+        }
+        else{
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
+          df <- df |> filter(!is.na(mean))
+
+        }
+
+
+      }
+
+      else{
+        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
+        df <- df |> filter(!is.na(mean))
+
+      }
 
     }
     if(actual_but$active == "bar") {
@@ -323,11 +366,25 @@ server <- function(input, output, session) {
 
 
    if(actual_but$active %in% c("treemap")) {
-     print(input$hcClicked)
-     if (!is.null(input$hcClicked$cat$parent)) {
-       click_viz$id <- input$hcClicked$cat$parent
+
+     if(length(unique(input$Country)) > 1){
+       if (!"All" %in% input$Country){
+     # print(input$hcClicked)
+          if (!is.null(input$hcClicked$cat$parent)) {
+               click_viz$id <- input$hcClicked$cat$parent
+             }
+         else{   click_viz$id <- input$hcClicked$id }
+       }
+       else{   click_viz$id <- input$hcClicked$id }
      }
-     else {   click_viz$id <- NULL }
+       else{
+         click_viz$id <- input$hcClicked$id
+
+       }
+
+
+
+      # else {   click_viz$id <- NULL }
    }
    else{
       if (!is.null(input$hcClicked$id)) {
@@ -370,7 +427,7 @@ server <- function(input, output, session) {
             }
 
             if (actual_but$active %in% c("treemap")) {
-            myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+              myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
 
              }
 
@@ -453,8 +510,25 @@ server <- function(input, output, session) {
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
-        opts$datalabel_formmater_js  <- TRUE
-        opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
+
+        if(length(unique(input$Country)) > 1) {
+          if (!"All" %in% input$Country){
+            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$datalabel_formmater_js  <- TRUE
+          }
+          else{
+            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$datalabel_formmater_js  <- TRUE
+
+          }
+
+        }
+
+        else{
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><br/><b>Average Price:</b> {mean_show} usd"
+          opts$datalabel_formmater_js  <- TRUE
+        }
+
       }
 
       if (actual_but$active == "bar") {
@@ -623,7 +697,16 @@ server <- function(input, output, session) {
 
   ##############################
   #Demo otuput side with DT
+  output$viz_view_side_limit <- renderUI({
+    #TODO update Country - create a metric for to choose
+    req(actual_but$active)
+    if(is.null(click_viz$id)) { return() }
+    if (actual_but$active == "treemap" & click_viz$id == "Ukraine") {
+        tx <- HTML("<div style='color:red;  font-size: 7px;'>
+                  10,000 records are displayed. If you want to see the complete detail, access the table shown in the menu. </div><br/>" )
+    }
 
+  })
   output$viz_view_side <- renderUI({
 
     tx <- HTML("<div class = 'click'>
@@ -653,6 +736,7 @@ server <- function(input, output, session) {
       dt <- list("Country" = click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
 
+
       # df_filtered <- df_filtered |> head(100)
       tx <- creating_detail_data(df_filtered , click_viz$id, actual_but$active)
 
@@ -681,9 +765,15 @@ server <- function(input, output, session) {
 
       if(is.null( click_viz$id)) return(NULL)
       dt <- list("Country"= click_viz$id)
+
       df_filtered <- filtering_list(data_down(),dt)
+      df_filtered$`Tender Title` <- str_trunc(  df_filtered$`Tender Title`,100,"right")
+      df_filtered <- df_filtered |> head(10000)
       # df_filtered <- df_filtered |> head(1000)
+
       tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
+
+
 
     }
     if(!is.null(tx)) { if(nrow(tx)==0)
@@ -715,6 +805,7 @@ server <- function(input, output, session) {
                               fixedColumns = TRUE,
                               fixedHeader = TRUE,
                               paging = TRUE#,
+
                               #lengthPage = 2
 
                             ))

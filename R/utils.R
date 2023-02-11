@@ -148,7 +148,17 @@ selecting_viz_typeGraph <- function(df, type_viz, param=NULL) {
         }
 
   }
-  if(type_viz=="treemap" ) {   prex <- "CatCatNum" }
+  if(type_viz=="treemap") {
+    prex <- "CatNum"
+
+    if(length(unique(param)) > 1){
+      if (!"All" %in% param){
+        prex <- "CatCatNum"
+      }
+    }
+
+  }
+
   prex
 }
 
