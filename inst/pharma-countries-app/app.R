@@ -527,7 +527,7 @@ server <- function(input, output, session) {
         }
 
         else{
-          opts$tooltip <- "<b>Country:</b> {Country}<br/><br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
           opts$datalabel_formmater_js  <- TRUE
           opts$color_by <- "Country"
         }
