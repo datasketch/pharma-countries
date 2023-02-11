@@ -504,8 +504,7 @@ server <- function(input, output, session) {
 
       if (actual_but$active == "treemap") {
         # opts$Labels <-  sitools::f2si(data_v$mean)
-        opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
-                                 "#ffeea8", "#da3592","#0000ff")
+
         opts$dataLabels_align <- "middle"
         opts$dataLabels_inside <- TRUE
         opts$dataLabels_show <- TRUE
@@ -515,10 +514,13 @@ server <- function(input, output, session) {
           if (!"All" %in% input$Country){
             opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
             opts$datalabel_formmater_js  <- TRUE
+            opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                     "#ffeea8", "#da3592","#0000ff")
           }
           else{
             opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
             opts$datalabel_formmater_js  <- TRUE
+            opts$color_by <- "Country"
 
           }
 
@@ -527,6 +529,7 @@ server <- function(input, output, session) {
         else{
           opts$tooltip <- "<b>Country:</b> {Country}<br/><br/><b>Average Price:</b> {mean_show} usd"
           opts$datalabel_formmater_js  <- TRUE
+          opts$color_by <- "Country"
         }
 
       }
