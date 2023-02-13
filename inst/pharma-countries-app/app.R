@@ -23,6 +23,7 @@ ui <- panelsPage(
           uiOutput("controls"),
           uiOutput("sel_slide_opts"),
           uiOutput("sel_check_opt"),
+          uiOutput("sel_check_opt_asc")
         )
   ),
   panel(title = "Visualization",
@@ -108,28 +109,35 @@ server <- function(input, output, session) {
 
 
   output$sel_slide_opts <- renderUI({
-    req(sel_slide_opts_max())
+    # req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
-    if (actual_but$active == "bar")   sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+    if (actual_but$active == "bar" ){
+      sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
                                                   min=1, max=sel_slide_opts_max(), value=c(0,10)) |>
-      # shinyInput_label_embed(
-      #   shiny_iconlink("info") %>%
-      #     bs_embed_popover(
-      #       title = "sel_slide_opts", content = "Choose a favorite", placement = "left"
-      #     )
-      # )
-     # sel_slide_opts_max()
-      bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
+          bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
+    }else{
 
+    if(actual_but$active == "treemap") {
+      # req(input$sel_slide_opts)
+
+       if(length(unique(input$Country)) >= 1) {
+         if (!"All" %in% input$Country) {
+           sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+                       min=1, max=sel_slide_opts_max(), value=c(0,10)) |> #'
+             bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
+         }
+       }
+     }
+    }
   })
 
   sel_slide_opts_max <- reactive({
     req(data_down())
     req(actual_but$active)
     req(parmesan_input())
-    if (actual_but$active == "bar") {
+    if (actual_but$active == "bar" |  actual_but$active == "treemap") {
       ls <- parmesan_input()
-      df <- filtering_list(data_down(), ls, "Tender Year")
+       df <- filtering_list(data_down(), ls, "Tender Year")
 
       df$counter_c <-NULL
       if(length(unique(input$Country)) > 1){
@@ -148,7 +156,15 @@ server <- function(input, output, session) {
       }
 
       else{
-        df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+        if(actual_but$active == "treemap" & !"All" %in% input$Country){
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          total <- length(input$Country)
+          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+        }
+         else {
+           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+         }
       }
       # df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
       df <- df |> filter(!is.na(mean) | mean==0)
@@ -165,10 +181,30 @@ server <- function(input, output, session) {
     req(sel_slide_opts_max())
 
     if (actual_but$active == "bar") {
-      checkboxInput("sel_check_opt","Sort by name",FALSE)
+        checkboxInput("sel_check_opt","Sort by name",FALSE)
     }
 
   })
+  output$sel_check_opt_asc <- renderUI({
+    req(data_down())
+    req(actual_but$active)
+    req(sel_slide_opts_max())
+
+    if (actual_but$active == "treemap") {
+      if(length(unique(input$Country)) >= 1){
+        if (!"All" %in% input$Country){
+            radioButtons("sel_check_opt_asc","Order type:",
+                   c("Desc" = "Desc",
+                     "Asc" = "Asc"))
+
+        }
+      }
+
+
+    }
+
+  })
+
 
   observe({
     if ("All" %in% input$Country) {
@@ -218,6 +254,7 @@ server <- function(input, output, session) {
     if (actual_but$active == "table") return()
     req(data_down())
     req( parmesan_input())
+
     ls= parmesan_input()
 
     if(actual_but$active == "map") {
@@ -227,8 +264,10 @@ server <- function(input, output, session) {
     if(actual_but$active == "treemap") {
       # req(input$sel_slide_opts)
 
-      if(length(unique(input$Country)) > 1){
+      if(length(unique(input$Country)) >= 1){
         if (!"All" %in% input$Country){
+          if(is.null(input$sel_check_opt_asc)) return()
+
           df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug Name")
           df <- df |> filter(!is.na(mean))
           df <- df |> arrange(desc(mean),`Drug Name`,Country)
@@ -237,10 +276,38 @@ server <- function(input, output, session) {
           df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
           df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
           df <- df |> filter(!is.na(mean))
+          ####print(df)
+          ##print(input$sel_check_opt_asc)
+
+
+          if(!is.null(input$sel_check_opt_asc)){
+            if(input$sel_check_opt_asc != "Desc"){
+              df = df|>  dplyr::arrange(mean)
+            }
+            else {
+
+              df = df|>  dplyr::arrange(desc(mean))
+            }
+          }
+          if(nrow(df) > 0) {
+            #
+            if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+          }
           if(nrow(df) < 0) {
             #
              HTML("There are no common vaccines for the selected countries")
           }
+
+          if(!is.null(input$sel_check_opt_asc)){
+            if(input$sel_check_opt_asc != "Desc"){
+                 df = df|>  dplyr::arrange(mean)
+            }
+            else {
+
+              df = df|>  dplyr::arrange(desc(mean))
+            }
+          }
+
 
 
 
@@ -258,8 +325,47 @@ server <- function(input, output, session) {
       }
 
       else{
+        if(length(unique(input$Country)) == 1){
+
+
+          ##print("into")
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug Name")
+          ##print("after sele")
+          df <- df |> filter(!is.na(mean))
+          df <- df |> arrange(desc(mean),`Drug Name`,Country)
+          df <- df |> select(Country,`Drug Name`,mean)
+          total <- length(input$Country)
+          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df <- df |> filter(!is.na(mean))
+          ##print(df)
+
+          if(!is.null(input$sel_check_opt_asc)){
+            if(input$sel_check_opt_asc != "Desc"){
+              df = df|>  dplyr::arrange(mean)
+            }
+            else {
+
+              df = df|>  dplyr::arrange(desc(mean))
+            }
+          }
+
+          if(nrow(df) > 0) {
+            #
+            if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+          }
+          if(nrow(df) < 0) {
+            #
+            HTML("There are no common vaccines for the selected countries")
+          }
+
+
+
+        }
+        else{
         df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
         df <- df |> filter(!is.na(mean))
+        }
 
       }
 
@@ -348,7 +454,8 @@ server <- function(input, output, session) {
 
 
 
-  click_viz <- reactiveValues(id = NULL)
+  click_viz <- reactiveValues(id = NULL,
+                              cat =NULL)
 
   observeEvent(input$lflt_viz_shape_click, {
     if (is.null(data_viz())) return()
@@ -356,7 +463,10 @@ server <- function(input, output, session) {
     if (!is.null(input$lflt_viz_shape_click$id)) {
       click_viz$id <- input$lflt_viz_shape_click$id
     }
-    else {   click_viz$id <- NULL }
+    else {
+      click_viz$id <- NULL
+
+    }
 
   })
 
@@ -364,14 +474,15 @@ server <- function(input, output, session) {
   observeEvent(input$hcClicked, {
     if (is.null(data_viz())) return()
 
-
+    ##print(input$hcClicked)
    if(actual_but$active %in% c("treemap")) {
 
-     if(length(unique(input$Country)) > 1){
+     if(length(unique(input$Country)) >= 1){
        if (!"All" %in% input$Country){
-     # print(input$hcClicked)
+           ##print(input$hcClicked)
           if (!is.null(input$hcClicked$cat$parent)) {
                click_viz$id <- input$hcClicked$cat$parent
+               click_viz$cat <- input$hcClicked$cat$name
              }
          else{   click_viz$id <- input$hcClicked$id }
        }
@@ -387,10 +498,28 @@ server <- function(input, output, session) {
       # else {   click_viz$id <- NULL }
    }
    else{
-      if (!is.null(input$hcClicked$id)) {
-        click_viz$id <- input$hcClicked$id
+     if(!actual_but$active %in% c("line","bar")){
+       if (!is.null(input$hcClicked$id)) {
+         click_viz$id <- input$hcClicked$id
+
+       }
+       else {   click_viz$id <- NULL
+
+       }
+
+     }
+      else{
+          if (!is.null(input$hcClicked$id)) {
+            click_viz$id <- input$hcClicked$id
+            click_viz$cat <- input$hcClicked$cat
+            ##print("click_viz")
+            ##print(click_viz$id)
+            ##print(click_viz$cat)
+          }
+          else {   click_viz$id <- NULL
+                   click_viz$cat <- NULL
+              }
       }
-      else {   click_viz$id <- NULL }
    }
 
 
@@ -452,7 +581,7 @@ server <- function(input, output, session) {
       data_v <- data_v |> dplyr::rename("Average Price" = "mean")
 
      # if(actual_but$active == "treemap") {
-     #   print( sitools::f2si(data_v$mean) )
+     #   ##print( sitools::f2si(data_v$mean) )
      # }
 
       opts <- list(
@@ -510,12 +639,22 @@ server <- function(input, output, session) {
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
 
-        if(length(unique(input$Country)) > 1) {
+        if(length(unique(input$Country)) >= 1) {
           if (!"All" %in% input$Country){
+            # if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
             opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
             opts$datalabel_formmater_js  <- TRUE
-            opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+
+           if(length(unique(input$Country)) > 1){
+                opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
                                      "#ffeea8", "#da3592","#0000ff")
+            }
+            else{
+              if(length(unique(input$Country)) == 1){
+
+                opts$color_by <- "Country"
+              }
+           }
           }
           else{
             opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
@@ -750,6 +889,11 @@ server <- function(input, output, session) {
 
       dt <- list("Tender Year"= click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
+      if(!is.null(click_viz$cat)) {
+        dt <- list("Country"= click_viz$cat)
+        df_filtered <- filtering_list(df_filtered,dt)
+
+      }
       # df_filtered <- df_filtered |> head(1000)
       tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
 
@@ -759,6 +903,11 @@ server <- function(input, output, session) {
       if(is.null( click_viz$id)) return(NULL)
       dt <- list("Drug Name"= click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
+      if(!is.null(click_viz$cat)) {
+        dt <- list("Country"= click_viz$cat)
+        df_filtered <- filtering_list(df_filtered,dt)
+
+      }
       # df_filtered <- df_filtered |> head(1000)
       tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
 
@@ -767,10 +916,19 @@ server <- function(input, output, session) {
     if (actual_but$active == "treemap") {
 
       if(is.null( click_viz$id)) return(NULL)
-      dt <- list("Country"= click_viz$id)
+      ##print("input click")
+      #print(click_viz$id)
+      #print(click_viz$cat)
 
+      dt <- list("Country"= click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
       df_filtered$`Tender Title` <- str_trunc(  df_filtered$`Tender Title`,100,"right")
+
+      if(!is.null(click_viz$cat)) {
+        dt <- list("Drug Name"= click_viz$cat)
+        df_filtered <- filtering_list(df_filtered,dt)
+
+      }
       df_filtered <- df_filtered |> head(10000)
       # df_filtered <- df_filtered |> head(1000)
 
