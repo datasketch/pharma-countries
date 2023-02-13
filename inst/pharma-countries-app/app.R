@@ -704,7 +704,7 @@ server <- function(input, output, session) {
     #TODO update Country - create a metric for to choose
     req(actual_but$active)
     if(is.null(click_viz$id)) { return() }
-    if (actual_but$active == "treemap" & click_viz$id == "Ukraine") {
+    if ((actual_but$active == "treemap"   | actual_but$active == "map")  & click_viz$id == "Ukraine") {
         tx <- HTML("<div style='color:red;  font-size: 7px;'>
                   10,000 records are displayed. If you want to see the complete detail, access the table shown in the menu. </div><br/>" )
     }
@@ -738,7 +738,7 @@ server <- function(input, output, session) {
 
       dt <- list("Country" = click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
-
+      df_filtered <- df_filtered |> head(10000)
 
       # df_filtered <- df_filtered |> head(100)
       tx <- creating_detail_data(df_filtered , click_viz$id, actual_but$active)
