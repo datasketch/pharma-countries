@@ -112,7 +112,7 @@ server <- function(input, output, session) {
     # req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
     if (actual_but$active == "bar" ){
-      sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+      sliderInput("sel_slide_opts","Number of drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
                                                   min=1, max=sel_slide_opts_max(), value=c(0,10)) |>
           bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
     }else{
@@ -122,7 +122,7 @@ server <- function(input, output, session) {
 
        if(length(unique(input$Country)) >= 1) {
          if (!"All" %in% input$Country) {
-           sliderInput("sel_slide_opts","Number of Drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+           sliderInput("sel_slide_opts","Number of drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
                        min=1, max=sel_slide_opts_max(), value=c(0,10)) |> #'
              bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
          }
@@ -137,7 +137,8 @@ server <- function(input, output, session) {
     req(parmesan_input())
     if (actual_but$active == "bar" |  actual_but$active == "treemap") {
       ls <- parmesan_input()
-       df <- filtering_list(data_down(), ls, "Tender Year")
+        df <- data_down()
+       try(df <- filtering_list(df, ls, "Tender Year"))
 
       df$counter_c <-NULL
       if(length(unique(input$Country)) > 1){
@@ -160,7 +161,7 @@ server <- function(input, output, session) {
           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
           total <- length(input$Country)
           df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          try( df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`)))
         }
          else {
            df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
@@ -231,22 +232,30 @@ server <- function(input, output, session) {
 
   ############################## Data required
   data_down <-reactive({
-     tryCatch({
-
+      # tryCatch({
+      print("entro")
       req(parmesan_input())
       ls <- parmesan_input()
+      print("salio1")
       click_viz$id <- NULL
       df <- data |> dplyr::select(`Signature Date`, Country, `Drug Name`, `Tender Value Amount (usd)`, `Unit Price (usd)`, `Tender Title`, `Tender Year`)
+      print("salio2")
       #TODO hacer en preprocces
       df$`Unit Price (usd)` <- as.numeric(df$`Unit Price (usd)`)
-
-      df <- filtering_list(df, ls, "Tender Year")
-
+      print("salio3")
+      print(df)
+      print(ls)
+      try(
+        df <- filtering_list(df, ls, "Tender Year")
+      )
+      print("DF")
+      print(df)
+      print("saliot")
       df
-    },
-    error = function(cond) {
-      return()
-    })
+    # },
+    # error = function(cond) {
+    #   return()
+    # })
   })
 
   data_viz <- reactive({
