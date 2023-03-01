@@ -233,24 +233,17 @@ server <- function(input, output, session) {
   ############################## Data required
   data_down <-reactive({
       # tryCatch({
-      print("entro")
+
       req(parmesan_input())
       ls <- parmesan_input()
-      print("salio1")
+
       click_viz$id <- NULL
       df <- data |> dplyr::select(`Signature Date`, Country, `Drug type`, `Tender Value Amount (USD)`, `Unit Price (USD)`, `Tender Title`, `Tender Year`)
-      print("salio2")
       #TODO hacer en preprocces
       df$`Unit Price (USD)` <- as.numeric(df$`Unit Price (USD)`)
-      print("salio3")
-      print(df)
-      print(ls)
       try(
         df <- filtering_list(df, ls, "Tender Year")
       )
-      print("DF")
-      print(df)
-      print("saliot")
       df
     # },
     # error = function(cond) {
