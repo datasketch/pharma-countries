@@ -112,7 +112,7 @@ server <- function(input, output, session) {
     # req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
     if (actual_but$active == "bar" ){
-      sliderInput("sel_slide_opts","Number of Drug type to display",list(icon("paw"),"Select a variable:"),step=10,
+      sliderInput("sel_slide_opts","Number of drug types to display",list(icon("paw"),"Select a variable:"),step=10,
                                                   min=1, max=sel_slide_opts_max(), value=c(0,10)) |>
           bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
     }else{
@@ -122,7 +122,7 @@ server <- function(input, output, session) {
 
        if(length(unique(input$Country)) >= 1) {
          if (!"All" %in% input$Country) {
-           sliderInput("sel_slide_opts","Number of Drug type to display",list(icon("paw"),"Select a variable:"),step=10,
+           sliderInput("sel_slide_opts","Number of drug types to display",list(icon("paw"),"Select a variable:"),step=10,
                        min=1, max=sel_slide_opts_max(), value=c(0,10)) |> #'
              bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
          }
@@ -609,7 +609,7 @@ server <- function(input, output, session) {
         format_numericSymbols = T
       )
       if (actual_but$active == "map") {
-        opts$legend_title <- stringr::str_to_sentence(input$InsId_rb)
+        opts$legend_title <- input$InsId_rb
         opts$legend_color <-  "Black"
         opts$map_bins <- 3
         opts$map_color_scale = "Bins"
