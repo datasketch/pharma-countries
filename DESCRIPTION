@@ -17,7 +17,7 @@ Imports:
     shiny,
     bsplus,
     dsvizopts,
-    hgchmagic,
+    hgchmagic
 Remotes:
     facarranza/hgchmagic,
     datasketch/dsvizopts@bff1582
