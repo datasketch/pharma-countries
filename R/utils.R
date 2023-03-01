@@ -60,7 +60,7 @@ meaning_r <- function(df,colname_group1,mean_variable="",colname_group2=NULL) {
 
 
 
-#meaning_r(data,,colname_group1="Country",mean_variable="Tender Value Amount (usd)")
+#meaning_r(data,,colname_group1="Country",mean_variable="Tender Value Amount (USD)")
 #a=filter_list(data,list(tender_value_currency="KZT", `Tender Year`=2016))
 
 #' @import dplyr
@@ -252,8 +252,8 @@ gen_html_detail_to_modal <- function(id,list_block,...) {
 gen_html_detail <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
-  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
+  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (USD)","Unit Price (USD)","Drug type")
+  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (USD)","Unit Price (USD)","Drug type")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
   if(is.null(tittle_paraph)) tittle_paraph <- "Tender Title"
   da <- dplyr::select(df,one_of(parameters_col))
@@ -317,7 +317,7 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
 
   }
   if(type_viz=="bar") { #Pendiente si la colunmna se llamará ATC.product_nam
-    eval <- list( `Drug Name`=clickId)
+    eval <- list( `Drug type`=clickId)
     df_filtered <- filtering_list(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
@@ -356,8 +356,8 @@ counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
 gen_html_detail_df <- function(df, parameters_col=NULL, colnames_show=NULL, modal_col_show=NULL, tittle_paraph=NULL) {
   # da=get_data_api("request")
   # param="Request..doc."
-  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (usd)","Unit Price (usd)","Drug Name")
-  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (usd)" ,"Unit Price (usd)","Drug Name")
+  if(is.null(parameters_col)) parameters_col <- c("Tender Title","Country","Tender Value Amount (USD)","Unit Price (USD)","Drug type")
+  if(is.null(colnames_show)) colnames_show <- c("Tender Title","Country","Tender Value Amount (USD)" ,"Unit Price (USD)","Drug type")
   if(is.null(modal_col_show)) modal_col_show <- "NNN" #"ATC code" #No está implementado
   if(is.null(tittle_paraph)) tittle_paraph <- "Tender Title"
   da <- dplyr::select(df,one_of(parameters_col))

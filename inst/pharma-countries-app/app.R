@@ -103,7 +103,7 @@ server <- function(input, output, session) {
   })
 
   sel_atc <- reactive({
-    unique(data$`Drug Name`)
+    unique(data$`Drug type`)
   })
 
 
@@ -112,7 +112,7 @@ server <- function(input, output, session) {
     # req(sel_slide_opts_max())
     if (is.null(actual_but$active)) return()
     if (actual_but$active == "bar" ){
-      sliderInput("sel_slide_opts","Number of drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+      sliderInput("sel_slide_opts","Number of Drug type to display",list(icon("paw"),"Select a variable:"),step=10,
                                                   min=1, max=sel_slide_opts_max(), value=c(0,10)) |>
           bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
     }else{
@@ -122,7 +122,7 @@ server <- function(input, output, session) {
 
        if(length(unique(input$Country)) >= 1) {
          if (!"All" %in% input$Country) {
-           sliderInput("sel_slide_opts","Number of drug Name to display",list(icon("paw"),"Select a variable:"),step=10,
+           sliderInput("sel_slide_opts","Number of Drug type to display",list(icon("paw"),"Select a variable:"),step=10,
                        min=1, max=sel_slide_opts_max(), value=c(0,10)) |> #'
              bs_embed_tooltip(title = "We recommend that you choose no more than 10 categories to compare.")
          }
@@ -138,39 +138,39 @@ server <- function(input, output, session) {
     if (actual_but$active == "bar" |  actual_but$active == "treemap") {
       ls <- parmesan_input()
         df <- data_down()
-       try(df <- filtering_list(df, ls, "Tender Year"))
+       try( df <- filtering_list(df, ls, "Tender Year"))
 
       df$counter_c <-NULL
       if(length(unique(input$Country)) > 1){
         if (!"All" %in% input$Country){
-          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug type","Country")
           total <- length(input$Country)
-          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
                   #
 
         }
         else{
-          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug type")
         }
 
       }
 
       else{
         if(actual_but$active == "treemap" & !"All" %in% input$Country){
-          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug type","Country")
           total <- length(input$Country)
-          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          try( df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`)))
+          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+          try( df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`)))
         }
          else {
-           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug type")
          }
       }
-      # df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug Name")
+      # df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug type")
       df <- df |> filter(!is.na(mean) | mean==0)
 
-      length(unique(df$`Drug Name`))
+      length(unique(df$`Drug type`))
 
     }
 
@@ -238,10 +238,10 @@ server <- function(input, output, session) {
       ls <- parmesan_input()
       print("salio1")
       click_viz$id <- NULL
-      df <- data |> dplyr::select(`Signature Date`, Country, `Drug Name`, `Tender Value Amount (usd)`, `Unit Price (usd)`, `Tender Title`, `Tender Year`)
+      df <- data |> dplyr::select(`Signature Date`, Country, `Drug type`, `Tender Value Amount (USD)`, `Unit Price (USD)`, `Tender Title`, `Tender Year`)
       print("salio2")
       #TODO hacer en preprocces
-      df$`Unit Price (usd)` <- as.numeric(df$`Unit Price (usd)`)
+      df$`Unit Price (USD)` <- as.numeric(df$`Unit Price (USD)`)
       print("salio3")
       print(df)
       print(ls)
@@ -267,7 +267,7 @@ server <- function(input, output, session) {
     ls= parmesan_input()
 
     if(actual_but$active == "map") {
-      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Country", "Drug Name")
+      df <- selecting_viz_data(data_down(), actual_but$active, ls$InsId_rb, "Country", "Drug type")
 
     }
     if(actual_but$active == "treemap") {
@@ -277,13 +277,13 @@ server <- function(input, output, session) {
         if (!"All" %in% input$Country){
           if(is.null(input$sel_check_opt_asc)) return()
 
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug Name")
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
           df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),`Drug Name`,Country)
-          df <- df |> select(Country,`Drug Name`,mean)
+          df <- df |> arrange(desc(mean),`Drug type`,Country)
+          df <- df |> select(Country,`Drug type`,mean)
           total <- length(input$Country)
-          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
           df <- df |> filter(!is.na(mean))
           ####print(df)
           ##print(input$sel_check_opt_asc)
@@ -320,7 +320,7 @@ server <- function(input, output, session) {
 
 
 
-          # df <- df |> arrange(Country,`Drug Name`,desc(mean))
+          # df <- df |> arrange(Country,`Drug type`,desc(mean))
 
 
         }
@@ -338,14 +338,14 @@ server <- function(input, output, session) {
 
 
           ##print("into")
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug Name")
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
           ##print("after sele")
           df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),`Drug Name`,Country)
-          df <- df |> select(Country,`Drug Name`,mean)
+          df <- df |> arrange(desc(mean),`Drug type`,Country)
+          df <- df |> select(Country,`Drug type`,mean)
           total <- length(input$Country)
-          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
           df <- df |> filter(!is.na(mean))
           ##print(df)
 
@@ -384,13 +384,13 @@ server <- function(input, output, session) {
 
       if(length(unique(input$Country)) > 1){
         if (!"All" %in% input$Country){
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Drug Name","Country")
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Drug type","Country")
           df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),`Drug Name`,Country)
-          df <- df |> select(Country,`Drug Name`,mean)
+          df <- df |> arrange(desc(mean),`Drug type`,Country)
+          df <- df |> select(Country,`Drug type`,mean)
           total <- length(input$Country)
-          df2 <- df |> group_by(`Drug Name`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug Name` %in% as.vector(df2$`Drug Name`))
+          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
 
           if(nrow(df) > 0) {
                       #
@@ -399,12 +399,12 @@ server <- function(input, output, session) {
 
           else{ HTML("There are no common vaccines for the selected countries")}
 
-          # df <- df |> arrange(Country,`Drug Name`,desc(mean))
+          # df <- df |> arrange(Country,`Drug type`,desc(mean))
 
 
         }
         else{
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug Name")
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug type")
           df <- df |> filter(!is.na(mean))
           if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
 
@@ -415,7 +415,7 @@ server <- function(input, output, session) {
       }
 
        else{
-        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug Name")
+        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Drug type")
         df <- df |> filter(!is.na(mean))
         if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
 
@@ -621,7 +621,7 @@ server <- function(input, output, session) {
         opts$map_bins <- 3
         opts$map_color_scale = "Bins"
         opts$na_color <- "transparent"
-        opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+        opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
         opts$format_sample_num = "10M"
         # opts$palette_colors <- rev(c("#ef4e00", "#f66a02", "#fb8412", "#fd9d29",
                                      # "#ffb446", "#ffca6b", "#ffdf98"))
@@ -636,7 +636,7 @@ server <- function(input, output, session) {
           opts$ver_title <- "Tender Year"
           opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
           opts$format_sample_num = "10M"
-          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Tender Year:</b> {Tender Year}<br/><b>Average Price:</b> {mean_show} USD"
         }
       }
 
@@ -651,7 +651,7 @@ server <- function(input, output, session) {
         if(length(unique(input$Country)) >= 1) {
           if (!"All" %in% input$Country){
             # if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
-            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
             opts$datalabel_formmater_js  <- TRUE
 
            if(length(unique(input$Country)) > 1){
@@ -666,7 +666,7 @@ server <- function(input, output, session) {
            }
           }
           else{
-            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
             opts$datalabel_formmater_js  <- TRUE
             opts$color_by <- "Country"
 
@@ -675,7 +675,7 @@ server <- function(input, output, session) {
         }
 
         else{
-          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
           opts$datalabel_formmater_js  <- TRUE
           opts$color_by <- "Country"
         }
@@ -685,25 +685,25 @@ server <- function(input, output, session) {
       if (actual_but$active == "bar") {
         opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
                                  "#ffeea8", "#da3592","#0000ff")
-        opts$ver_title <- "Drug name"
+        opts$ver_title <- "Drug type"
         opts$hor_title <- stringr::str_to_sentence(input$InsId_rb)
         opts$format_sample_num = "10M"
         if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
 
         if(length(unique(input$Country)) > 1){
           if (!"All" %in% input$Country){
-            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$tooltip <- "<b>Drug type:</b> {Drug type}<br/><b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
 
           }
           else{
-            opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
+            opts$tooltip <- "<b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
 
           }
 
         }
 
         else{
-          opts$tooltip <- "<b>Drug Name:</b> {Drug Name}<br/><b>Average Price:</b> {mean_show} usd"
+          opts$tooltip <- "<b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
         }
       }
 
@@ -910,7 +910,7 @@ server <- function(input, output, session) {
 
     if (actual_but$active == "bar") {
       if(is.null( click_viz$id)) return(NULL)
-      dt <- list("Drug Name"= click_viz$id)
+      dt <- list("Drug type"= click_viz$id)
       df_filtered <- filtering_list(data_down(),dt)
       if(!is.null(click_viz$cat)) {
         dt <- list("Country"= click_viz$cat)
@@ -934,7 +934,7 @@ server <- function(input, output, session) {
       df_filtered$`Tender Title` <- str_trunc(  df_filtered$`Tender Title`,100,"right")
 
       if(!is.null(click_viz$cat)) {
-        dt <- list("Drug Name"= click_viz$cat)
+        dt <- list("Drug type"= click_viz$cat)
         df_filtered <- filtering_list(df_filtered,dt)
 
       }

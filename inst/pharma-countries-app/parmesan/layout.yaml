@@ -3,7 +3,7 @@ filtros:
   inputs:
     - Tender Year
     - Country
-    - Drug Name
+    - Drug type
     - InsId_rb
 
 

@@ -15,7 +15,12 @@ Depends:
     dplyr
 Imports:
     shiny,
-    bsplus
+    bsplus,
+    dsvizopts,
+    hgchmagic,
+Remotes:
+    facarranza/hgchmagic,
+    datasketch/dsvizopts@bff1582
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0)

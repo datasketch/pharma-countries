@@ -25,11 +25,11 @@ Country:
       - - drag_drop
 
 
-Drug Name:
+Drug type:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Drug name
+    label: Drug type
     choices: sel_atc()
     multiple: true
     options:
@@ -45,12 +45,12 @@ InsId_rb:
     icon: info-circle
     text: “'Tender amount' refers to the total value of the awarded tender, whilst 'unit price' refers to the price paid per item in the awarded tender”
   input_params:
-    label: "Number value (usd)"
+    label: "Number value (USD)"
     choices:
       Unit price:
-      - Unit Price (usd)
+      - Unit Price (USD)
       Tender amount:
-      - Tender Value Amount (usd)
+      - Tender Value Amount (USD)
   inline: FALSE
 
 
