@@ -55,6 +55,10 @@ flex-direction: column !important;
   opacity: 1;
 }
 
+.irs {
+  margin-bottom: 10px !important;
+
+}
 .irs-bar {
     color: #3695D8  !important;
     background-color: #3695D8  !important;
@@ -168,10 +172,13 @@ flex-direction: column !important;
   border: 1px solid #D8D8D8 !important;
   border-radius: 6px !important;
   opacity: 1;
+
 }
 .control-label {
   color: #000;
+
 }
+
 
 /* STYLES TO DATES INPUTS */
 .shinyinvoer-date-range-container {
@@ -220,7 +227,10 @@ flex-direction: column !important;
   transform: translateX(100%);
 }
 */
+.label{
+  margin-top: 15px !important;
 
+}
 .shiny-options-group {
   display: flex !important;
   gap: 0px !important;

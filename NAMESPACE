@@ -3,6 +3,7 @@
 export(counting_r)
 export(creating_detail_data)
 export(filtering_list)
+export(filtering_list_side)
 export(gen_html_detail)
 export(gen_html_detail_df)
 export(gen_html_detail_to_modal)

@@ -8,9 +8,10 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
   # list_params=list(id_Country = NULL, id_anio=2010)
   # length(list_params)
   # names(list_params[1])
+
   if(is.null(seq_var)) seq_var=""
 
-  list_params= list_params[-4]
+  list_params= list_params[-1]
 
   for(i in 1:length(list_params)) {
 
@@ -39,6 +40,54 @@ filtering_list <- function(df, list_params = NULL, seq_var=NULL){
 
 }
 
+
+#' @import dplyr
+#' @export
+filtering_list_side <- function(df, list_params = NULL, seq_var=NULL){
+  #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
+  #Descarta parametros NULL y All al momento de filtrar
+  # list_params=list(id_Country = NULL, id_anio=2010)
+  print("list_params")
+  print(list_params)
+  print("seq_var")
+  print(seq_var)
+  saveRDS(df,"df.rda")
+  saveRDS(list_params,"list.rda")
+  saveRDS(seq_var,"seq.rda")
+   df <- readRDS("df.rda")
+   list_params <-    readRDS("list.rda")
+   seq_var <-  readRDS("seq.rda")
+
+  if(is.null(seq_var)) seq_var=""
+
+  # list_params= list_params[-4]
+
+  for(i in 1:length(list_params)) {
+
+    if(!is.null(names(list_params[i]))){
+
+      if(!is.null(list_params[[ i ]])) {
+
+        df$temp <-  stringr::str_remove(df[[names(list_params[i])]],"`")
+
+        if(names(list_params[i])!=seq_var) {
+
+          if(list_params[[ i ]][1] != "All") {
+
+            df  <- df  |> dplyr::filter( temp %in% list_params[[i]]) |>  dplyr::select(!temp)
+          }
+        }
+        else{
+          df  <- df  |> dplyr::filter( temp >= list_params[[i]][1] & temp <= list_params[[i]][2] ) |>  dplyr::select(!temp)
+        }
+      }
+
+    }
+  }
+
+  df
+
+}
 
 
 #' @import dplyr
@@ -149,7 +198,7 @@ selecting_viz_typeGraph <- function(df, type_viz, param=NULL) {
 
   }
   if(type_viz=="treemap") {
-    prex <- "CatNum"
+    prex <- "CatCatNum"
 
     if(length(unique(param)) > 1){
       if (!"All" %in% param){
@@ -306,25 +355,25 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
   # if (is.null(clickId)) return()
   if(type_viz=="map") { #Pendiente si la colunmna se llamará Country
     eval <- list(Country=clickId)
-    df_filtered <- filtering_list(df,eval)
+    df_filtered <- filtering_list_side(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="line") { #Pendiente si la colunmna se llamará `Tender Year`
     eval <- list(`Tender Year`=clickId)
-    df_filtered <- filtering_list(df,eval)
+    df_filtered <- filtering_list_side(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="bar") { #Pendiente si la colunmna se llamará ATC.product_nam
     eval <- list( `Drug type`=clickId)
-    df_filtered <- filtering_list(df,eval)
+    df_filtered <- filtering_list_side(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }
   if(type_viz=="treemap") { #Pendiente si la colunmna se llamará Country
     eval <- list(Country=clickId)
-    df_filtered <- filtering_list(df,eval)
+    df_filtered <- filtering_list_side(df,eval)
     html_detail <- gen_html_detail_df(df, parameters_col)
 
   }

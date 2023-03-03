@@ -70,6 +70,7 @@ ui <- panelsPage(
 server <- function(input, output, session) {
   ###Panel izquierdo
   observe({
+    print(others_treemap$list_country_drug)
     if (is.null(input$viz_selection)) return()
     viz_rec <- c("map", "line", "bar", "treemap", "table")
 
@@ -138,7 +139,7 @@ server <- function(input, output, session) {
     if (actual_but$active == "bar" |  actual_but$active == "treemap") {
       ls <- parmesan_input()
         df <- data_down()
-       try( df <- filtering_list(df, ls, "Tender Year"))
+       try( df <- filtering_list_side(df, ls, "Tender Year"))
 
       df$counter_c <-NULL
       if(length(unique(input$Country)) > 1){
@@ -147,8 +148,7 @@ server <- function(input, output, session) {
           total <- length(input$Country)
           df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
           df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
-                  #
-
+          #
         }
         else{
           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug type")
@@ -160,8 +160,13 @@ server <- function(input, output, session) {
         if(actual_but$active == "treemap" & !"All" %in% input$Country){
           df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb,  "Drug type","Country")
           total <- length(input$Country)
+          print("df")
+          print(nrow(df))
+          print(total)
+          print(colnames(df))
+
           df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
-          try( df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`)))
+          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
         }
          else {
            df <- selecting_viz_data(df, actual_but$active,  ls$InsId_rb, "Drug type")
@@ -240,12 +245,18 @@ server <- function(input, output, session) {
       click_viz$id <- NULL
       df <- data |> dplyr::select(`Signature Date`, Country, `Drug type`, `Tender Value Amount (USD)`, `Unit Price (USD)`, `Tender Title`, `Tender Year`)
       #TODO hacer en preprocces
+      print("nrw")
+      print(nrow(df))
+      print(colnames(df))
       df$`Unit Price (USD)` <- as.numeric(df$`Unit Price (USD)`)
-      try(
+     # try(
         df <- filtering_list(df, ls, "Tender Year")
-      )
+      #)
+      print("Unique")
+      print(unique(df$Country))
+      # },
       df
-    # },
+
     # error = function(cond) {
     #   return()
     # })
@@ -266,7 +277,7 @@ server <- function(input, output, session) {
     if(actual_but$active == "treemap") {
       # req(input$sel_slide_opts)
 
-      if(length(unique(input$Country)) >= 1){
+       if(length(unique(input$Country)) >  1){
         if (!"All" %in% input$Country){
           if(is.null(input$sel_check_opt_asc)) return()
 
@@ -278,7 +289,7 @@ server <- function(input, output, session) {
           df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
           df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
           df <- df |> filter(!is.na(mean))
-          ####print(df)
+          print(df)
           ##print(input$sel_check_opt_asc)
 
 
@@ -318,8 +329,13 @@ server <- function(input, output, session) {
 
         }
         else{
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
+          # df <- df |> filter(!is.na(mean))
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,"Country", "Drug type")
+          print(df)
+          ##print("after sele")
           df <- df |> filter(!is.na(mean))
+          df <- df |> arrange(desc(mean),Country,`Drug type`)
+
 
         }
 
@@ -329,9 +345,9 @@ server <- function(input, output, session) {
       else{
         if(length(unique(input$Country)) == 1){
 
-
-          ##print("into")
+        ##print("into")
           df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
+          print(df)
           ##print("after sele")
           df <- df |> filter(!is.na(mean))
           df <- df |> arrange(desc(mean),`Drug type`,Country)
@@ -340,7 +356,21 @@ server <- function(input, output, session) {
           df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
           df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
           df <- df |> filter(!is.na(mean))
-          ##print(df)
+          #
+          # df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
+          # df1$temp_c <- 1
+          #
+          # df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
+          # # print(others_treemap$list_country_drug )
+          # others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
+          # # others_treemap$list_country_drug <- 1
+          # print(others_treemap$list_country_drug )
+          # df2$`Drug type` = "Others"
+          # df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
+          # df2$temp_c <- 2
+          # df <- as.data.frame(rbind(df1,df2))
+          # df <- df |> arrange(desc(mean),Country,`Drug type`)
+          # df
 
           if(!is.null(input$sel_check_opt_asc)){
             if(input$sel_check_opt_asc != "Desc"){
@@ -363,10 +393,40 @@ server <- function(input, output, session) {
 
 
 
-        }
+         }
         else{
-        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
-        df <- df |> filter(!is.na(mean))
+        # df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
+        # df <- df |> filter(!is.na(mean))
+          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,"Country", "Drug type")
+          # print(df)
+          ##print("after sele")
+          # print("1")
+          df <- df |> filter(!is.na(mean))
+          df <- df |> arrange(desc(mean),Country,`Drug type`)
+          df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
+          df1$temp_c <- 1
+          df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
+          # print(others_treemap$list_country_drug )
+          others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
+          # others_treemap$list_country_drug <- 1
+          print(others_treemap$list_country_drug )
+          df2$`Drug type` = "Others"
+          df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
+          df2$temp_c <- 2
+          df <- as.data.frame(rbind(df1,df2))
+          df <- df |> arrange(desc(mean),Country,`Drug type`)
+          df
+
+
+
+            # group_by(Country,`Drug type`) %>%
+            # arrange(mean, .by_group = TRUE) %>%
+            # top_n(1)
+
+
+
+
+          # df <- df |> select(Country,`Drug type`,mean)
         }
 
       }
@@ -455,6 +515,7 @@ server <- function(input, output, session) {
   })
 
 
+  others_treemap <- reactiveValues(list_country_drug=NULL)
 
   click_viz <- reactiveValues(id = NULL,
                               cat =NULL)
@@ -478,24 +539,43 @@ server <- function(input, output, session) {
 
     ##print(input$hcClicked)
    if(actual_but$active %in% c("treemap")) {
+     # click_viz$id <- input$hcClicked$cat$parent
+     # click_viz$cat <- input$hcClicked$cat$name
+     # #vchange order
+     click_viz$id <- input$hcClicked$cat$parent
+     click_viz$cat <- input$hcClicked$cat$name
 
-     if(length(unique(input$Country)) >= 1){
+
+     if(length(unique(input$Country)) > 1){
        if (!"All" %in% input$Country){
-           ##print(input$hcClicked)
+         print("entrooooo")
           if (!is.null(input$hcClicked$cat$parent)) {
-               click_viz$id <- input$hcClicked$cat$parent
+               click_viz$id <-  input$hcClicked$cat$parent
                click_viz$cat <- input$hcClicked$cat$name
              }
+         else{   print("entrooooo2")
+                 click_viz$id <- input$hcClicked$id }
+       }
+       else{
+         print("entrooooo3")
+         click_viz$id <- input$hcClicked$id }
+     }
+     if(length(unique(input$Country)) == 1){
+       if (!"All" %in% input$Country){
+         ##print(input$hcClicked)
+         if (!is.null(input$hcClicked$cat$parent)) {
+           click_viz$id <-   input$hcClicked$cat$parent
+           click_viz$cat <-   input$hcClicked$cat$name
+         }
          else{   click_viz$id <- input$hcClicked$id }
        }
        else{   click_viz$id <- input$hcClicked$id }
      }
-       else{
-         click_viz$id <- input$hcClicked$id
+     else{
 
-       }
+     if(is.null(input$Country)) print("entrooooo4")
 
-
+     }
 
       # else {   click_viz$id <- NULL }
    }
@@ -537,6 +617,12 @@ server <- function(input, output, session) {
 
       myFunc <- NULL
 
+      if (actual_but$active %in% c("treemap")) {
+        myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+
+      }
+
+
       if(length(unique(input$Country)) > 1){
         if (!"All" %in% input$Country){
           if (actual_but$active %in% c("treemap")) {
@@ -573,10 +659,10 @@ server <- function(input, output, session) {
           myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "', {cat:this.name, id:event.point.category, timestamp: new Date().getTime()});}")
 
         }
-        if (actual_but$active %in% c("treemap")) {
-          myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
-
-        }
+        # if (actual_but$active %in% c("treemap")) {
+        #   myFunc <- paste0("function(event) {Shiny.onInputChange('", 'hcClicked', "',{cat:event.point.node, id:event.point.name, timestamp: new Date().getTime()});}");
+        #
+        # }
       }
       data_v <- data_viz()
       data_v <- data_v |> dplyr::mutate(mean_show = sitools::f2si(mean))
@@ -641,6 +727,7 @@ server <- function(input, output, session) {
         opts$dataLabels_show <- TRUE
         opts$legend_show <- FALSE
 
+
         if(length(unique(input$Country)) >= 1) {
           if (!"All" %in% input$Country){
             # if(input$sel_check_opt == FALSE){ opts$sort <- "desc" }
@@ -653,13 +740,14 @@ server <- function(input, output, session) {
             }
             else{
               if(length(unique(input$Country)) == 1){
-
-                opts$color_by <- "Country"
+               #TODO, el color no cambia
+                print("entrooooo")
+                opts$color_by <- "Drug type"
               }
            }
           }
           else{
-            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
+            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
             opts$datalabel_formmater_js  <- TRUE
             opts$color_by <- "Country"
 
@@ -668,9 +756,12 @@ server <- function(input, output, session) {
         }
 
         else{
-          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Average Price:</b> {mean_show} USD"
+          opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
           opts$datalabel_formmater_js  <- TRUE
-          opts$color_by <- "Country"
+
+          # opts$color_by <- "Country"
+          opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                   "#ffeea8", "#da3592","#0000ff")
         }
 
       }
@@ -851,6 +942,7 @@ server <- function(input, output, session) {
     }
 
   })
+
   output$viz_view_side <- renderUI({
 
     tx <- HTML("<div class = 'click'>
@@ -878,7 +970,7 @@ server <- function(input, output, session) {
       if(is.null(click_viz$id)) { return() }
 
       dt <- list("Country" = click_viz$id)
-      df_filtered <- filtering_list(data_down(),dt)
+      df_filtered <- filtering_list_side(data_down(),dt)
       df_filtered <- df_filtered |> head(10000)
 
       # df_filtered <- df_filtered |> head(100)
@@ -890,10 +982,10 @@ server <- function(input, output, session) {
       if(is.null(click_viz$id)) return(NULL)
 
       dt <- list("Tender Year"= click_viz$id)
-      df_filtered <- filtering_list(data_down(),dt)
+      df_filtered <- filtering_list_side(data_down(),dt)
       if(!is.null(click_viz$cat)) {
         dt <- list("Country"= click_viz$cat)
-        df_filtered <- filtering_list(df_filtered,dt)
+        df_filtered <- filtering_list_side(df_filtered,dt)
 
       }
       # df_filtered <- df_filtered |> head(1000)
@@ -904,10 +996,10 @@ server <- function(input, output, session) {
     if (actual_but$active == "bar") {
       if(is.null( click_viz$id)) return(NULL)
       dt <- list("Drug type"= click_viz$id)
-      df_filtered <- filtering_list(data_down(),dt)
+      df_filtered <- filtering_list_side(data_down(),dt)
       if(!is.null(click_viz$cat)) {
         dt <- list("Country"= click_viz$cat)
-        df_filtered <- filtering_list(df_filtered,dt)
+        df_filtered <- filtering_list_side(df_filtered,dt)
 
       }
       # df_filtered <- df_filtered |> head(1000)
@@ -918,21 +1010,33 @@ server <- function(input, output, session) {
     if (actual_but$active == "treemap") {
 
       if(is.null( click_viz$id)) return(NULL)
-      ##print("input click")
-      #print(click_viz$id)
-      #print(click_viz$cat)
+      print("#####################")
+      print("input click")
+      print(click_viz$id)
+      print(click_viz$cat)
+      print("#####################")
 
       dt <- list("Country"= click_viz$id)
-      df_filtered <- filtering_list(data_down(),dt)
+      df_filtered <- filtering_list_side(data_down(),dt)
       df_filtered$`Tender Title` <- str_trunc(  df_filtered$`Tender Title`,100,"right")
 
       if(!is.null(click_viz$cat)) {
-        dt <- list("Drug type"= click_viz$cat)
-        df_filtered <- filtering_list(df_filtered,dt)
+        if(click_viz$cat == "Others"){
+
+          dt_temp_others <- others_treemap$list_country_drug |> filter(Country == dt[[1]])
+          dt <- list("Drug type"= dt_temp_others$`Drug type`)
+          df_filtered <- filtering_list_side(df_filtered,dt)
+        }
+        else{
+         dt <- list("Drug type" = click_viz$cat)
+         print("dt")
+         print(dt)
+         df_filtered <- filtering_list_side(df_filtered,dt)
+        }
 
       }
       df_filtered <- df_filtered |> head(10000)
-      # df_filtered <- df_filtered |> head(1000)
+
 
       tx <- creating_detail_data(df_filtered ,  click_viz$id, actual_but$active)
 
