@@ -388,7 +388,7 @@ server <- function(input, output, session) {
           df <- df |> filter(!is.na(mean))
           df <- df |> arrange(desc(mean),Country,`Drug type`)
           df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
-          df1$temp_c <- 1
+          # df1$temp_c <- 1
           df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
 
           others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
@@ -396,7 +396,7 @@ server <- function(input, output, session) {
 
           df2$`Drug type` = "Others"
           df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
-          df2$temp_c <- 2
+          # df2$temp_c <- 2
           df <- as.data.frame(rbind(df1,df2))
           df <- df |> arrange(desc(mean),Country,`Drug type`)
           df
