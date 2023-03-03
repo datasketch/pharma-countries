@@ -269,62 +269,80 @@ server <- function(input, output, session) {
     if(actual_but$active == "treemap") {
       # req(input$sel_slide_opts)
 
+
        if(length(unique(input$Country)) >  1){
-        if (!"All" %in% input$Country){
-          if(is.null(input$sel_check_opt_asc)) return()
 
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
-          df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),`Drug type`,Country)
-          df <- df |> select(Country,`Drug type`,mean)
-          total <- length(input$Country)
-          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
-          df <- df |> filter(!is.na(mean))
+            if (!"All" %in% input$Country){
+              if(is.null(input$sel_check_opt_asc)) return()
 
-          if(!is.null(input$sel_check_opt_asc)){
-            if(input$sel_check_opt_asc != "Desc"){
-              df = df|>  dplyr::arrange(mean)
+              df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
+              df <- df |> filter(!is.na(mean))
+              df <- df |> arrange(desc(mean),`Drug type`,Country)
+              df <- df |> select(Country,`Drug type`,mean)
+              total <- length(input$Country)
+              df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+              df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
+              df <- df |> filter(!is.na(mean))
+
+              if(!is.null(input$sel_check_opt_asc)){
+                if(input$sel_check_opt_asc != "Desc"){
+                  df = df|>  dplyr::arrange(mean)
+                }
+                else {
+
+                  df = df|>  dplyr::arrange(desc(mean))
+                }
+              }
+              if(nrow(df) > 0) {
+                #
+                if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+              }
+              if(nrow(df) < 0) {
+                #
+                 HTML("There are no common vaccines for the selected countries")
+              }
+
+              if(!is.null(input$sel_check_opt_asc)){
+                if(input$sel_check_opt_asc != "Desc"){
+                     df = df|>  dplyr::arrange(mean)
+                }
+                else {
+
+                  df = df|>  dplyr::arrange(desc(mean))
+                }
+              }
+
+
+
+
+              # df <- df |> arrange(Country,`Drug type`,desc(mean))
+
+
             }
-            else {
+            else{
 
-              df = df|>  dplyr::arrange(desc(mean))
+              # df <- df |> filter(!is.na(mean))
+              # df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
+              # df <- df |> filter(!is.na(mean))
+              df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,"Country", "Drug type")
+              df <- df |> filter(!is.na(mean))
+              df <- df |> arrange(desc(mean),Country,`Drug type`)
+              df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
+              # df1$temp_c <- 1
+              df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
+
+              others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
+              # others_treemap$list_country_drug <- 1
+
+              df2$`Drug type` = "Others"
+              df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
+              # df2$temp_c <- 2
+              df <- as.data.frame(rbind(df1,df2))
+              df <- df |> arrange(desc(mean),Country,`Drug type`)
+              df
+
+
             }
-          }
-          if(nrow(df) > 0) {
-            #
-            if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
-          }
-          if(nrow(df) < 0) {
-            #
-             HTML("There are no common vaccines for the selected countries")
-          }
-
-          if(!is.null(input$sel_check_opt_asc)){
-            if(input$sel_check_opt_asc != "Desc"){
-                 df = df|>  dplyr::arrange(mean)
-            }
-            else {
-
-              df = df|>  dplyr::arrange(desc(mean))
-            }
-          }
-
-
-
-
-          # df <- df |> arrange(Country,`Drug type`,desc(mean))
-
-
-        }
-        else{
-          # df <- df |> filter(!is.na(mean))
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,"Country", "Drug type")
-          df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),Country,`Drug type`)
-
-
-        }
 
 
       }
@@ -332,55 +350,85 @@ server <- function(input, output, session) {
       else{
         if(length(unique(input$Country)) == 1){
 
+                      if ("All" %in% input$Country){
+                        # df <- df |> filter(!is.na(mean))
+                        df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,"Country", "Drug type")
+                        df <- df |> filter(!is.na(mean))
+                        df <- df |> arrange(desc(mean),Country,`Drug type`)
+                        df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
+                        # df1$temp_c <- 1
+                        df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
 
-          df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
+                        others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
+                        # others_treemap$list_country_drug <- 1
+
+                        df2$`Drug type` = "Others"
+                        df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
+                        # df2$temp_c <- 2
+                        df <- as.data.frame(rbind(df1,df2))
+                        df <- df |> arrange(desc(mean),Country,`Drug type`)
+                        df
 
 
-          df <- df |> filter(!is.na(mean))
-          df <- df |> arrange(desc(mean),`Drug type`,Country)
-          df <- df |> select(Country,`Drug type`,mean)
-          total <- length(input$Country)
-          df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
-          df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
-          df <- df |> filter(!is.na(mean))
-          #
-          # df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
-          # df1$temp_c <- 1
-          #
-          # df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
-          # # print(others_treemap$list_country_drug )
-          # others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
-          # # others_treemap$list_country_drug <- 1
+                      }
+                      else {
+                      #######################################
+                      df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb,  "Country", "Drug type")
 
-          # df2$`Drug type` = "Others"
-          # df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
-          # df2$temp_c <- 2
-          # df <- as.data.frame(rbind(df1,df2))
-          # df <- df |> arrange(desc(mean),Country,`Drug type`)
-          # df
 
-          if(!is.null(input$sel_check_opt_asc)){
-            if(input$sel_check_opt_asc != "Desc"){
-              df = df|>  dplyr::arrange(mean)
-            }
-            else {
+                      df <- df |> filter(!is.na(mean))
+                      df <- df |> arrange(desc(mean),`Drug type`,Country)
+                      df <- df |> select(Country,`Drug type`,mean)
+                      total <- length(input$Country)
+                      df2 <- df |> group_by(`Drug type`) |> summarize(count = n()) |> filter(count == total)
+                      df <- df |> filter(`Drug type` %in% as.vector(df2$`Drug type`))
+                      df <- df |> filter(!is.na(mean))
+                      #
+                      # df1 <-  df %>% select(Country,`Drug type`,mean) |> top_n(10,mean)
+                      # df1$temp_c <- 1
+                      #
+                      # df2 <-  df |> filter(!`Drug type` %in% as.vector(df1$`Drug type`))
+                      # # print(others_treemap$list_country_drug )
+                      # others_treemap$list_country_drug  <-  unique(df2 |> select(Country,`Drug type`))
+                      # # others_treemap$list_country_drug <- 1
 
-              df = df|>  dplyr::arrange(desc(mean))
-            }
+                      # df2$`Drug type` = "Others"
+                      # df2 <- df2   |>  group_by(Country,`Drug type`) |> summarize(mean=mean(mean,na.rm=TRUE))
+                      # df2$temp_c <- 2
+                      # df <- as.data.frame(rbind(df1,df2))
+                      # df <- df |> arrange(desc(mean),Country,`Drug type`)
+                      # df
+
+                      if(!is.null(input$sel_check_opt_asc)){
+                        if(input$sel_check_opt_asc != "Desc"){
+                          df = df|>  dplyr::arrange(mean)
+                        }
+                        else {
+
+                          df = df|>  dplyr::arrange(desc(mean))
+                        }
+                      }
+
+                      if(nrow(df) > 0) {
+                        #
+                        if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
+                      }
+                      if(nrow(df) < 0) {
+                        #
+                        HTML("There are no common vaccines for the selected countries")
+                      }
+
+
+
+
+
+
+
+
+                      ########################
+                      }
+
           }
-
-          if(nrow(df) > 0) {
-            #
-            if(!is.null(input$sel_slide_opts)) df <- df[c(as.integer(input$sel_slide_opts[1]):as.integer(input$sel_slide_opts[2])),]
-          }
-          if(nrow(df) < 0) {
-            #
-            HTML("There are no common vaccines for the selected countries")
-          }
-
-
-
-         }
         else{
         # df <- selecting_viz_data(data_down(), actual_but$active,  ls$InsId_rb, "Country")
         # df <- df |> filter(!is.na(mean))
@@ -551,7 +599,8 @@ server <- function(input, output, session) {
          }
          else{   click_viz$id <- input$hcClicked$id }
        }
-       else{   click_viz$id <- input$hcClicked$id }
+       else{   click_viz$id <-   input$hcClicked$cat$parent
+               click_viz$cat <-   input$hcClicked$cat$name }
      }
      # else{
      #
@@ -721,15 +770,28 @@ server <- function(input, output, session) {
             else{
               if(length(unique(input$Country)) == 1){
                #TODO, el color no cambia
-                opts$color_by <- "Drug type"
+                if ("All" %in% input$Country){
+                  opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                           "#ffeea8", "#da3592","#0000ff")
+
+                  }
+                else{ opts$color_by <- "Drug type"
+                }
               }
            }
           }
           else{
-            opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
-            opts$datalabel_formmater_js  <- TRUE
-            opts$color_by <- "Country"
 
+            if ("All" %in% input$Country){
+              opts$palette_colors <- c("#ef4e00", "#ffe700", "#6fcbff", "#62ce00",
+                                       "#ffeea8", "#da3592","#0000ff")
+
+            }
+            else {
+                opts$tooltip <- "<b>Country:</b> {Country}<br/><b>Drug type:</b> {Drug type}<br/><b>Average Price:</b> {mean_show} USD"
+                opts$datalabel_formmater_js  <- TRUE
+                opts$color_by <- "Country"
+            }
           }
 
         }
