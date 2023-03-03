@@ -47,16 +47,7 @@ filtering_list_side <- function(df, list_params = NULL, seq_var=NULL){
   #A tomar en cuenta: si el valor en la lista es nulo no hace filtración, no evalua UPPER/TOUPPER; LIKE, solo "in"
   #Descarta parametros NULL y All al momento de filtrar
   # list_params=list(id_Country = NULL, id_anio=2010)
-  print("list_params")
-  print(list_params)
-  print("seq_var")
-  print(seq_var)
-  saveRDS(df,"df.rda")
-  saveRDS(list_params,"list.rda")
-  saveRDS(seq_var,"seq.rda")
-   df <- readRDS("df.rda")
-   list_params <-    readRDS("list.rda")
-   seq_var <-  readRDS("seq.rda")
+
 
   if(is.null(seq_var)) seq_var=""
 
@@ -173,7 +164,7 @@ selecting_viz_data <- function(df,type_viz,variable_viz, group_by_viz, desagrega
     }
 
   }
-  # print( df |> head(2))
+
   df
 }
 
@@ -383,8 +374,7 @@ creating_detail_data <- function(df, clickId, type_viz, parameters_col=NULL,sele
 #' @import dplyr
 #' @export
 counting_r <- function(df,colname_group1, colname_group2=NULL, na_control=NULL){
-  #######print(colname_group1)
-  #######print(names(df))
+
   if(is.null(colname_group2)){
     df <- df %>% group_by(across(all_of(colname_group1))) %>% summarize(count =n())
   }else{
