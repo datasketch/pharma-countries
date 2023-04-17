@@ -26,6 +26,11 @@ Suggests:
     shinypanels,
     shinycustomloader,
 Imports:
+    dplyr,
+    htmltools,
+    purrr,
+    tidyr,
+    yaml,
     shiny,
     bsplus,
     dsvizopts,
