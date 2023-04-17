@@ -1,11 +1,10 @@
 ## Load data - csv
 library(dplyr)
+url="https://docs.google.com/spreadsheets/d/13zQTJHRgOYIl62lfZtZK8WqbtwznAAYByoSWyN35fp4/edit#gid=1608654429"
 
-name <- "data-raw/pharma_exported_171122.csv"
-data <- read.csv(name)
-DataExplorer::create_report(data)
+data <- rio::import(url)
 
-colnames(data)
+#colnames(data)
 # data$`Drug Name`
 
 colnames(data)  <- c("tender_id","lot_id","Tender Title","Tender Value Amount (USD)","lot_value_amount","tender_value_currency",

@@ -68,6 +68,11 @@ ui <- panelsPage(
 
 
 server <- function(input, output, session) {
+
+
+
+  library(dplyr)
+
   ###Panel izquierdo
   observe({
 
