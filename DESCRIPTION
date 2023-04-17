@@ -38,6 +38,7 @@ Remotes:
     datasketch/dsmodules,
     facarranza/hgchmagic,
     datasketch/dsvizopts@bff1582,
+    datasketch/lfltmagic,
     datasketch/shinypanels,
     emitanaka/shinycustomloader
 LazyData: true
