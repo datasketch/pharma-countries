@@ -41,6 +41,4 @@ Remotes:
     datasketch/shinypanels,
     emitanaka/shinycustomloader
 LazyData: true
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+
