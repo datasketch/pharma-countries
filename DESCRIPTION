@@ -12,6 +12,13 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
+Imports:
+    dplyr,
+    htmltools,
+    purrr,
+    tidyr,
+    yaml,
+    bsplus
 Suggests:
     makeup,
     parmesan,
@@ -24,17 +31,7 @@ Suggests:
     testthat (>= 3.0.0),
     webshot2,
     shinypanels,
-    shinycustomloader,
-Imports:
-    dplyr,
-    htmltools,
-    purrr,
-    tidyr,
-    yaml,
-    shiny,
-    bsplus,
-    dsvizopts,
-    hgchmagic
+    shinycustomloader
 Remotes:
     datasketch/parmesan,
     datasketch/makeup,
@@ -46,5 +43,3 @@ Remotes:
     datasketch/lfltmagic,
     datasketch/shinypanels,
     emitanaka/shinycustomloader
-LazyData: true
-
