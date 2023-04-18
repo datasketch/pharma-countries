@@ -21,6 +21,7 @@ Imports:
     bsplus
 Suggests:
     makeup,
+    reactable,
     parmesan,
     homodatum,
     dstools,
@@ -30,6 +31,7 @@ Suggests:
     lfltmagic,
     testthat (>= 3.0.0),
     webshot2,
+    DT,
     shinypanels,
     shinycustomloader
 Remotes:
