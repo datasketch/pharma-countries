@@ -43,3 +43,4 @@ Remotes:
     datasketch/lfltmagic,
     datasketch/shinypanels,
     emitanaka/shinycustomloader
+LazyData: true
