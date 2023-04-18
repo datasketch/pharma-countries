@@ -38,7 +38,7 @@ jobs:
       - name: Execute Directory
         run: |
           pwd
-          cd inst/pharma-corruption-app
+          cd inst/pharma-countries-app
           pwd
       - name: Deploy to shinyapps.io
         # Continuous deployment only for pushes to the main / master branch
