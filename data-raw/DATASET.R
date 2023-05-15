@@ -1,11 +1,10 @@
 ## Load data - csv
 library(dplyr)
-url="https://docs.google.com/spreadsheets/d/13zQTJHRgOYIl62lfZtZK8WqbtwznAAYByoSWyN35fp4/edit#gid=1608654429"
+library(googledrive)
+googledrive::drive_deauth()
 
-data <- rio::import(url)
-
-#colnames(data)
-# data$`Drug Name`
+drive_download(as_id("https://drive.google.com/file/d/1C6An-Se10Cgt4YDf2VjEQkaexq9kCDPC"),overwrite = TRUE,  path = "data-raw/pharma.csv")
+data <- read.csv("data-raw/pharma.csv")
 
 colnames(data)  <- c("tender_id","lot_id","Tender Title","Tender Value Amount (USD)","lot_value_amount","tender_value_currency",
                      "Unit Price (USD)","quantity","Tender Year","ATC.code","Country","tender_publications_firstcallfortenderdate",
