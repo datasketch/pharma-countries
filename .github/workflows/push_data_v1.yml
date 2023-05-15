@@ -21,6 +21,7 @@ jobs:
           Rscript -e "install.packages('purr', dependencies=TRUE)"
           Rscript -e "install.packages('rio', dependencies=TRUE)"
           Rscript -e "install.packages('lubridate', dependencies=TRUE)"
+          Rscript -e "install.packages('googledrive', dependencies=TRUE)"
           Rscript "data-raw/DATASET.R"
       - name: Commit files
         run: |
