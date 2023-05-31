@@ -41,7 +41,7 @@ Remotes:
     datasketch/homodatum,
     datasketch/dstools,
     datasketch/dsmodules,
-    facarranza/hgchmagic,
+    ddazal/hgchmagic,
     datasketch/dsvizopts@bff1582,
     datasketch/lfltmagic,
     datasketch/shinypanels,
